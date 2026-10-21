@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GramFintech Hub - Empowering Rural Enterprise</title>
+    <title>GramFintech Hub - Rural Enterprise & Credit Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -32,9 +32,9 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen relative">
 
-    <!-- LOGIN & AUTHENTICATION MODAL (Appears First) -->
+    <!-- 1. LOGIN & AUTHENTICATION MODAL -->
     <div id="authModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
             <div class="bg-brand-900 p-6 text-white text-center">
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="space-y-1">
-                        <label class="text-xs font-semibold text-slate-600">Email Address / ID</label>
+                        <label class="text-xs font-semibold text-slate-600">Email Address / User ID</label>
                         <input type="email" id="authEmail" required placeholder="entrepreneur@gram.in" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
 
@@ -81,6 +81,183 @@
         </div>
     </div>
 
+    <!-- 2. SCHEME DETAILS MODAL (POPUP WHEN CLICKING SCHEME CARDS) -->
+    <div id="schemeModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="bg-brand-900 p-6 text-white flex justify-between items-start sticky top-0 z-10">
+                <div>
+                    <span id="modalSchemeTag" class="text-[10px] font-extrabold uppercase bg-brand-700 text-brand-100 px-2.5 py-1 rounded-full border border-brand-600">SCHEME DETAILS</span>
+                    <h3 id="modalSchemeTitle" class="text-2xl font-bold mt-2">Scheme Name</h3>
+                </div>
+                <button onclick="closeSchemeModal()" class="text-slate-300 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="p-6 space-y-6 text-sm text-slate-700">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-base mb-1"><i class="fa-solid fa-circle-info text-brand-600 mr-2"></i>Overview & Key Benefits</h4>
+                    <p id="modalSchemeDesc" class="text-slate-600 leading-relaxed">Detailed overview will appear here.</p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Interest Rate / Benefit</span>
+                        <p id="modalSchemeInterest" class="font-bold text-brand-700 text-base">Subsidized Interest</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Maximum Credit Limit</span>
+                        <p id="modalSchemeLimit" class="font-bold text-slate-900 text-base">Up to ₹5,00,000</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 text-base mb-2"><i class="fa-solid fa-file-check text-brand-600 mr-2"></i>Required Documents Checklist</h4>
+                    <ul id="modalSchemeDocs" class="space-y-1.5 list-disc list-inside text-slate-600 text-xs sm:text-sm">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 text-base mb-2"><i class="fa-solid fa-list-check text-brand-600 mr-2"></i>How to Apply (Step-by-Step)</h4>
+                    <ol id="modalSchemeSteps" class="space-y-1.5 list-decimal list-inside text-slate-600 text-xs sm:text-sm">
+                        <!-- Populated by JS -->
+                    </ol>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <button onclick="closeSchemeModal()" class="w-full sm:w-auto px-5 py-2.5 border border-slate-300 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 text-xs">Close</button>
+                    <button onclick="openLoanModalFromScheme()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Apply / Request Loan Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. REQUEST LOAN APPLICATION MODAL (SAVED TO FIRESTORE) -->
+    <div id="loanModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto">
+            <div class="bg-brand-900 p-5 text-white flex justify-between items-center sticky top-0 z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-hand-holding-hand text-brand-100 text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg">Request Micro-Loan</h3>
+                        <p class="text-xs text-brand-200">Rural Credit & Subvention Application</p>
+                    </div>
+                </div>
+                <button onclick="closeLoanModal()" class="text-slate-300 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form onsubmit="submitLoanRequest(event)" class="p-6 space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-700">Preferred Scheme</label>
+                    <select id="loanSchemeSelect" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white font-medium text-slate-800">
+                        <option value="MUDRA Yojana (Shishu/Kishor)">MUDRA Yojana (Micro-Business & Retail)</option>
+                        <option value="PM Vishwakarma Yojana">PM Vishwakarma (Artisans & Craftsmen)</option>
+                        <option value="Kisan Credit Card (KCC)">Kisan Credit Card (Dairy & Agri Capital)</option>
+                        <option value="General Rural Business Loan">General Rural Enterprise Credit</option>
+                    </select>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-700">Loan Amount Needed (₹)</label>
+                        <input type="number" id="loanAmountReq" required min="5000" max="500000" placeholder="e.g. 50000" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none font-semibold">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-700">Business Activity / Purpose</label>
+                        <input type="text" id="loanPurpose" required placeholder="e.g. Kirana Shop, Dairy Cows, Carpentry" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-700">Mobile Number</label>
+                        <input type="tel" id="loanMobile" required placeholder="10-digit number" pattern="[0-9]{10}" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-700">Village / District Name</label>
+                        <input type="text" id="loanLocation" required placeholder="e.g. Khed, Pune" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="p-3 bg-brand-50 rounded-xl border border-brand-200 text-xs text-brand-900 space-y-1">
+                    <p class="font-bold"><i class="fa-solid fa-shield-halved text-brand-600 mr-1"></i> Lowest Interest Guarantee:</p>
+                    <p class="text-[11px] text-brand-800">Your application will automatically be mapped to government subvention schemes offering interest rates as low as **5% – 7% p.a.**</p>
+                </div>
+
+                <button type="submit" id="loanSubmitBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Loan Application
+                </button>
+
+                <div id="loanStatus" class="hidden p-3 rounded-lg text-xs font-semibold text-center"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. MULTILINGUAL AI ASSISTANT DRAWER/MODAL -->
+    <div id="aiModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between overflow-hidden">
+            <!-- AI Header -->
+            <div class="bg-brand-900 p-4 text-white flex justify-between items-center shadow-md">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-brand-700 rounded-full flex items-center justify-center text-brand-100 border border-brand-500">
+                        <i class="fa-solid fa-robot text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">GramFintech AI Assistant</h3>
+                        <p class="text-[10px] text-brand-200">Rural Scheme & Credit Advisory</p>
+                    </div>
+                </div>
+                <button onclick="closeAiAssistant()" class="text-slate-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Language Selector Bar -->
+            <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs">
+                <span class="font-semibold text-slate-600"><i class="fa-solid fa-language mr-1 text-brand-600"></i> Select Language:</span>
+                <div class="flex gap-1">
+                    <button id="langEN" onclick="setAiLanguage('en')" class="px-2 py-1 rounded font-bold bg-brand-700 text-white">English</button>
+                    <button id="langHI" onclick="setAiLanguage('hi')" class="px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200">हिंदी</button>
+                    <button id="langMR" onclick="setAiLanguage('mr')" class="px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200">मराठी</button>
+                </div>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chatContainer" class="flex-grow p-4 space-y-3 overflow-y-auto bg-slate-50 text-xs">
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[85%] space-y-1">
+                    <p id="aiGreeting" class="font-medium text-slate-800">
+                        Hello! I am your GramFintech AI Assistant. Ask me anything about Mudra loans, PM Vishwakarma, Kisan Credit Cards, documents needed, or lowest interest rates!
+                    </p>
+                </div>
+
+                <!-- Quick Prompts -->
+                <div class="pt-2">
+                    <p class="text-[10px] font-bold uppercase text-slate-400 mb-2">Quick Questions:</p>
+                    <div id="quickQuestions" class="flex flex-col gap-1.5">
+                        <button onclick="sendQuickQuestion('mudra_docs')" class="text-left bg-brand-50 hover:bg-brand-100 text-brand-800 p-2 rounded-lg border border-brand-200 transition text-[11px] font-medium">
+                            📌 What documents are required for MUDRA Loan?
+                        </button>
+                        <button onclick="sendQuickQuestion('vishwakarma_benefit')" class="text-left bg-brand-50 hover:bg-brand-100 text-brand-800 p-2 rounded-lg border border-brand-200 transition text-[11px] font-medium">
+                            🔨 How to get ₹15,000 toolkit in PM Vishwakarma?
+                        </button>
+                        <button onclick="sendQuickQuestion('kcc_dairy')" class="text-left bg-brand-50 hover:bg-brand-100 text-brand-800 p-2 rounded-lg border border-brand-200 transition text-[11px] font-medium">
+                            🐄 Can I get Kisan Credit Card for Dairy & Cattle?
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input Bar -->
+            <div class="p-3 bg-white border-t border-slate-200 flex gap-2">
+                <input type="text" id="aiInput" placeholder="Ask in English, हिंदी, or मराठी..." class="flex-grow px-3 py-2 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-brand-500">
+                <button onclick="sendCustomAiMessage()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN NAVBAR -->
     <header class="bg-brand-900 text-white sticky top-0 z-40 shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -94,103 +271,161 @@
                 </div>
             </div>
 
-            <div class="flex items-center space-x-3">
-                <span id="userBadge" class="hidden sm:inline-block text-xs bg-brand-800 px-3 py-1 rounded-full text-brand-100 border border-brand-700">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button onclick="openLoanModal()" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> <span class="hidden sm:inline">Request</span> Loan
+                </button>
+                <button onclick="openAiAssistant()" class="text-xs bg-brand-700 hover:bg-brand-600 text-brand-50 px-3 py-1.5 rounded-lg border border-brand-500 transition flex items-center gap-1 font-semibold">
+                    <i class="fa-solid fa-robot text-brand-200"></i> AI Assistant
+                </button>
+                <span id="userBadge" class="hidden md:inline-block text-xs bg-brand-800 px-3 py-1 rounded-full text-brand-100 border border-brand-700">
                     <i class="fa-solid fa-user-circle mr-1"></i> <span id="userEmailDisplay">Logged In</span>
                 </span>
                 <button onclick="handleLogout()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition font-medium">
-                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- HERO & PROBLEM STATEMENT BANNER -->
-    <section class="bg-gradient-to-b from-brand-900 to-brand-800 text-white py-12 px-4">
-        <div class="container mx-auto max-w-5xl text-center space-y-4">
+    <!-- HERO BANNER -->
+    <section class="bg-gradient-to-b from-brand-900 to-brand-800 text-white py-10 px-4">
+        <div class="container mx-auto max-w-5xl text-center space-y-3">
             <span class="inline-block bg-brand-700 text-brand-100 text-xs px-3 py-1 rounded-full font-semibold border border-brand-600">
                 Solving Rural Digital Financial Inclusion
             </span>
             <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight">Bridging the Gap Between Rural Business & Digital Capital</h2>
-            <p class="text-slate-200 text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
+            <p class="text-slate-200 text-xs md:text-sm max-w-3xl mx-auto leading-relaxed">
                 A dedicated platform designed for rural micro-entrepreneurs, dairy farmers, artisans, and small traders to access government schemes, micro-loans, digital payment tools, and AI guidance without jargon.
             </p>
+            <div class="pt-2 flex flex-wrap justify-center gap-3">
+                <button onclick="openLoanModal()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl shadow-lg transition text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-file-signature"></i> Apply for Micro-Loan Now
+                </button>
+                <button onclick="openAiAssistant()" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20 transition text-xs flex items-center gap-2">
+                    <i class="fa-solid fa-comments"></i> Talk to AI Advisor (हिंदी / मराठी)
+                </button>
+            </div>
         </div>
     </section>
 
     <!-- DASHBOARD MAIN CONTENT -->
-    <main class="flex-grow container mx-auto px-4 py-8 space-y-12">
-        <!-- SCHEMES FINDER -->
+    <main class="flex-grow container mx-auto px-4 py-8 space-y-10">
+        <!-- 1. INTERACTIVE SCHEMES FINDER -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
-            <div class="border-b pb-4">
-                <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-hand-holding-dollar text-brand-600 mr-2"></i> Tailored Financial Scheme Finder</h3>
-                <p class="text-xs text-slate-500">Government initiatives simplified for rural enterprises.</p>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-4 gap-2">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-hand-holding-dollar text-brand-600 mr-2"></i> Tailored Financial Scheme Finder</h3>
+                    <p class="text-xs text-slate-500">Click on any scheme card below to view required documents, eligibility & application steps.</p>
+                </div>
+                <span class="text-xs font-semibold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200 self-start sm:self-auto">
+                    <i class="fa-solid fa-mouse-pointer mr-1"></i> Interactive Cards
+                </span>
             </div>
             
-            <div class="grid md:grid-cols-3 gap-4">
-                <div class="p-4 rounded-xl border border-slate-200 hover:border-brand-500 bg-slate-50 transition">
-                    <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">MUDRA Yojana</span>
-                    <h4 class="font-bold text-slate-800 mt-2">Shishu & Kishor Loans</h4>
-                    <p class="text-xs text-slate-600 mt-1">Collateral-free loans up to ₹5,00,000 for shopkeepers, artisans, and small processing units.</p>
+            <div class="grid md:grid-cols-3 gap-5">
+                <!-- Scheme Card 1: MUDRA -->
+                <div onclick="openSchemeModal('mudra')" class="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-lg">MUDRA Yojana</span>
+                        <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">View Details <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-lg group-hover:text-brand-700 transition">Shishu & Kishor Loans</h4>
+                    <p class="text-xs text-slate-600 mt-2 leading-relaxed">Collateral-free loans up to ₹5,00,000 for shopkeepers, artisans, and small processing units.</p>
+                    <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
+                        <span><i class="fa-solid fa-percent text-brand-600"></i> ~8.5% p.a.</span>
+                        <span class="font-bold text-slate-700">No Collateral</span>
+                    </div>
                 </div>
-                <div class="p-4 rounded-xl border border-slate-200 hover:border-brand-500 bg-slate-50 transition">
-                    <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">PM Vishwakarma</span>
-                    <h4 class="font-bold text-slate-800 mt-2">Artisan Support Scheme</h4>
-                    <p class="text-xs text-slate-600 mt-1">Skill training, ₹15,000 toolkit incentive, and 5% interest subvention credit for 18 traditional trades.</p>
+
+                <!-- Scheme Card 2: PM Vishwakarma -->
+                <div onclick="openSchemeModal('vishwakarma')" class="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-lg">PM Vishwakarma</span>
+                        <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">View Details <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-lg group-hover:text-brand-700 transition">Artisan Support Scheme</h4>
+                    <p class="text-xs text-slate-600 mt-2 leading-relaxed">Skill training, ₹15,000 toolkit incentive, and 5% interest subvention credit for 18 traditional trades.</p>
+                    <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
+                        <span><i class="fa-solid fa-gift text-brand-600"></i> ₹15k Toolkit Free</span>
+                        <span class="font-bold text-slate-700">5% Interest</span>
+                    </div>
                 </div>
-                <div class="p-4 rounded-xl border border-slate-200 hover:border-brand-500 bg-slate-50 transition">
-                    <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">Kisan Credit Card</span>
-                    <h4 class="font-bold text-slate-800 mt-2">Dairy & Agriculture KCC</h4>
-                    <p class="text-xs text-slate-600 mt-1">Low-interest working capital credit up to ₹2,00,000 for livestock, fodder, and farm upkeep.</p>
+
+                <!-- Scheme Card 3: Kisan Credit Card -->
+                <div onclick="openSchemeModal('kcc')" class="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-lg">Kisan Credit Card</span>
+                        <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">View Details <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-lg group-hover:text-brand-700 transition">Dairy & Agriculture KCC</h4>
+                    <p class="text-xs text-slate-600 mt-2 leading-relaxed">Low-interest working capital credit up to ₹2,00,000 for livestock, fodder, and farm upkeep.</p>
+                    <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
+                        <span><i class="fa-solid fa-cow text-brand-600"></i> Dairy & Agri</span>
+                        <span class="font-bold text-slate-700">3% Subvention</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- CALCULATOR SECTION -->
+        <!-- 2. CALCULATOR SECTION -->
         <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
             <div class="border-b pb-4">
                 <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-calculator text-brand-600 mr-2"></i> Micro-Loan EMI & Profit Estimator</h3>
-                <p class="text-xs text-slate-500">Plan monthly repayments before borrowing.</p>
+                <p class="text-xs text-slate-500">Adjust the sliders to calculate exact monthly repayments before taking a loan.</p>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="space-y-4">
+            <div class="grid md:grid-cols-2 gap-6 items-center">
+                <div class="space-y-5">
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Loan Amount required (₹)</label>
-                        <input type="range" id="loanAmount" min="10000" max="500000" step="5000" value="50000" oninput="calculateEMI()" class="w-full accent-brand-600">
-                        <div class="flex justify-between text-xs font-bold text-brand-700 mt-1">
+                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                            <span>Loan Amount Required:</span>
+                            <span id="loanAmountVal" class="text-base text-brand-700">₹50,000</span>
+                        </div>
+                        <input type="range" id="loanAmount" min="10000" max="500000" step="5000" value="50000" oninput="calculateEMI()" class="w-full accent-brand-600 cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                             <span>₹10,000</span>
-                            <span id="loanAmountVal" class="text-base text-slate-900">₹50,000</span>
                             <span>₹5,00,000</span>
                         </div>
                     </div>
 
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Tenure (Months)</label>
-                        <input type="range" id="loanTenure" min="6" max="60" step="6" value="24" oninput="calculateEMI()" class="w-full accent-brand-600">
-                        <div class="flex justify-between text-xs font-bold text-brand-700 mt-1">
+                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                            <span>Repayment Tenure:</span>
+                            <span id="loanTenureVal" class="text-base text-brand-700">24 Months</span>
+                        </div>
+                        <input type="range" id="loanTenure" min="6" max="60" step="6" value="24" oninput="calculateEMI()" class="w-full accent-brand-600 cursor-pointer">
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                             <span>6 Months</span>
-                            <span id="loanTenureVal" class="text-base text-slate-900">24 Months</span>
                             <span>60 Months</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-brand-50 p-6 rounded-xl border border-brand-200 flex flex-col justify-center items-center text-center space-y-2">
-                    <span class="text-xs font-bold text-brand-800 uppercase">Estimated Monthly Installment</span>
-                    <span id="emiResult" class="text-4xl font-extrabold text-brand-700">₹2,284 / mo</span>
-                    <p class="text-[11px] text-brand-800">Based on a 8.5% p.a. micro-credit interest rate</p>
+                <div class="bg-brand-900 text-white p-6 rounded-2xl flex flex-col justify-center items-center text-center space-y-3 shadow-lg">
+                    <span class="text-xs font-semibold text-brand-200 uppercase tracking-wider">Estimated Monthly EMI</span>
+                    <span id="emiResult" class="text-4xl font-extrabold text-brand-50">₹2,284 / mo</span>
+                    <p class="text-[11px] text-brand-200">Calculated at standard rural micro-credit subvention rate (~8.5% p.a.)</p>
+                    <button onclick="openLoanModal()" class="mt-2 px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition">
+                        Request This Amount Now
+                    </button>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- FLOATING AI ASSISTANT BUTTON -->
+    <button onclick="openAiAssistant()" class="fixed bottom-6 right-6 bg-brand-700 hover:bg-brand-800 text-white p-4 rounded-full shadow-2xl z-30 flex items-center gap-3 border-2 border-brand-400 transition transform hover:scale-105">
+        <i class="fa-solid fa-robot text-2xl"></i>
+        <span class="hidden sm:inline font-bold text-xs pr-1">Ask AI (हिंदी / मराठी)</span>
+    </button>
 
     <!-- FOOTER -->
     <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs">
         <p>© 2026 GramFintech Hub | Digital Financial Inclusion for Rural Enterprise</p>
     </footer>
 
-    <!-- FIREBASE & AUTH LOGIC -->
+    <!-- FIREBASE & APPLICATION LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -198,7 +433,7 @@
 
         // PASTE YOUR REAL FIREBASE KEYS HERE
         const firebaseConfig = {
-             apiKey: "AIzaSyD5UJn1t5lpV44GPLrP6uJY0zTN9xGyJNs",
+           apiKey: "AIzaSyD5UJn1t5lpV44GPLrP6uJY0zTN9xGyJNs",
   authDomain: "gramfintech-db.firebaseapp.com",
   projectId: "gramfintech-db",
   storageBucket: "gramfintech-db.firebasestorage.app",
@@ -212,7 +447,250 @@
         const db = getFirestore(app);
 
         let isSignup = false;
+        let activeLanguage = 'en';
+        let currentActiveScheme = 'MUDRA Yojana';
 
+        // Scheme Data Dictionary
+        const schemeData = {
+            mudra: {
+                title: "MUDRA Yojana (Shishu, Kishor & Tarun)",
+                tag: "MICRO-ENTERPRISE LOAN",
+                desc: "Pradhan Mantri MUDRA Yojana provides collateral-free credit to non-farm micro and small enterprises. Ideal for village shopkeepers, vegetable vendors, repair shops, and small processing units.",
+                interest: "8.5% – 11.5% p.a.",
+                limit: "Up to ₹5,00,000 (Shishu: up to ₹50k, Kishor: up to ₹5L)",
+                docs: [
+                    "Identity Proof (Aadhaar / Voter ID / PAN Card)",
+                    "Proof of Residence (Ration Card / Utility Bill)",
+                    "Business Address Proof / Shop Establishment Certificate",
+                    "Bank Account Statement for the last 6 months",
+                    "2 Passport-sized photographs"
+                ],
+                steps: [
+                    "Gather required ID and business address documents.",
+                    "Submit the loan request form via GramFintech portal or visit local Gramin Bank / Commercial Bank.",
+                    "Bank verifies business activity and sanction letter is issued within 7–10 days.",
+                    "Funds disbursed directly to applicant's bank account."
+                ]
+            },
+            vishwakarma: {
+                title: "PM Vishwakarma Scheme",
+                tag: "ARTISAN & CRAFTSMEN CREDIT",
+                desc: "A holistic government initiative for traditional artisans and craftspeople (carpenters, blacksmiths, goldsmiths, potters, cobblers, tailors, etc.). Provides skill training, ₹15,000 toolkit voucher, and low-interest credit.",
+                interest: "5% Fixed Concessional Interest",
+                limit: "Up to ₹3,00,000 (Tranche 1: ₹1L, Tranche 2: ₹2L)",
+                docs: [
+                    "Aadhaar Card linked with Mobile Number",
+                    "Bank Account details (Passbook copy)",
+                    "Ration Card or Family Verification Document",
+                    "Verification by Gram Panchayat Sarpanch / Urban Local Body"
+                ],
+                steps: [
+                    "Register at Common Service Centre (CSC) or submit request on GramFintech portal.",
+                    "3-stage verification by Gram Panchayat, District Implementation Committee, and Screening Committee.",
+                    "Receive 5-day basic skill training with ₹500/day stipend.",
+                    "Receive ₹15,000 e-voucher for modern toolkits and collateral-free 5% interest credit."
+                ]
+            },
+            kcc: {
+                title: "Kisan Credit Card (Dairy & Agri KCC)",
+                tag: "AGRICULTURE & LIVESTOCK CREDIT",
+                desc: "Provides hassle-free working capital loans for farmers, dairy owners, cattle breeders, and fish farmers. Comes with 3% interest subvention for prompt repayment.",
+                interest: "4% Effective p.a. (With Prompt Repayment)",
+                limit: "Up to ₹1,60,00,000 Collateral-Free (Up to ₹3L total limit)",
+                docs: [
+                    "Identity & Address Proof (Aadhaar / Voter Card)",
+                    "Land ownership records (7/12 extract / Pattadar Passbook) or Animal Census Certificate",
+                    "Dairy/Cooperative membership certificate (if applying for livestock credit)",
+                    "Duly filled KCC application form"
+                ],
+                steps: [
+                    "Fill KCC request form on GramFintech or visit nearest Bank / District Cooperative Bank.",
+                    "Submit land records or cattle/livestock ownership verification.",
+                    "Bank issues KCC card and credit limit valid for 5 years.",
+                    "Withdraw cash via ATM or purchase fodder/fertilizers directly using KCC debit card."
+                ]
+            }
+        };
+
+        // Modal Open / Close Logic
+        window.openSchemeModal = function(key) {
+            const data = schemeData[key];
+            if (!data) return;
+            currentActiveScheme = data.title;
+            document.getElementById('modalSchemeTitle').innerText = data.title;
+            document.getElementById('modalSchemeTag').innerText = data.tag;
+            document.getElementById('modalSchemeDesc').innerText = data.desc;
+            document.getElementById('modalSchemeInterest').innerText = data.interest;
+            document.getElementById('modalSchemeLimit').innerText = data.limit;
+
+            const docsList = document.getElementById('modalSchemeDocs');
+            docsList.innerHTML = data.docs.map(doc => `<li>${doc}</li>`).join('');
+
+            const stepsList = document.getElementById('modalSchemeSteps');
+            stepsList.innerHTML = data.steps.map(step => `<li>${step}</li>`).join('');
+
+            document.getElementById('schemeModal').classList.remove('hidden');
+        };
+
+        window.closeSchemeModal = function() {
+            document.getElementById('schemeModal').classList.add('hidden');
+        };
+
+        window.openLoanModal = function(schemeName) {
+            if (schemeName) {
+                document.getElementById('loanSchemeSelect').value = schemeName;
+            }
+            document.getElementById('loanModal').classList.remove('hidden');
+        };
+
+        window.openLoanModalFromScheme = function() {
+            closeSchemeModal();
+            openLoanModal(currentActiveScheme);
+        };
+
+        window.closeLoanModal = function() {
+            document.getElementById('loanModal').classList.add('hidden');
+        };
+
+        // Submit Loan Application to Firestore
+        window.submitLoanRequest = async function(e) {
+            e.preventDefault();
+            const statusDiv = document.getElementById('loanStatus');
+            const submitBtn = document.getElementById('loanSubmitBtn');
+
+            const scheme = document.getElementById('loanSchemeSelect').value;
+            const amount = document.getElementById('loanAmountReq').value;
+            const purpose = document.getElementById('loanPurpose').value;
+            const mobile = document.getElementById('loanMobile').value;
+            const location = document.getElementById('loanLocation').value;
+
+            statusDiv.className = "p-3 rounded-lg text-xs font-semibold text-center bg-blue-50 text-blue-700 block";
+            statusDiv.innerText = "Submitting application to Firestore Database...";
+            submitBtn.disabled = true;
+
+            try {
+                const user = auth.currentUser;
+                await addDoc(collection(db, "loan_requests"), {
+                    applicantEmail: user ? user.email : "guest_user",
+                    applicantUid: user ? user.uid : "anonymous",
+                    scheme: scheme,
+                    amountReq: Number(amount),
+                    purpose: purpose,
+                    mobile: mobile,
+                    location: location,
+                    status: "PENDING_REVIEW",
+                    timestamp: serverTimestamp()
+                });
+
+                statusDiv.className = "p-3 rounded-lg text-xs font-semibold text-center bg-emerald-50 text-emerald-700 block";
+                statusDiv.innerHTML = "✅ Loan Application Submitted Successfully! Application Reference ID generated in Firestore.";
+                setTimeout(() => {
+                    closeLoanModal();
+                    statusDiv.classList.add('hidden');
+                    submitBtn.disabled = false;
+                }, 2500);
+            } catch (err) {
+                statusDiv.className = "p-3 rounded-lg text-xs font-semibold text-center bg-red-50 text-red-700 block";
+                statusDiv.innerText = "Error saving request: " + (err.message || "Check database rules.");
+                submitBtn.disabled = false;
+            }
+        };
+
+        // AI Assistant Logic
+        window.openAiAssistant = function() {
+            document.getElementById('aiModal').classList.remove('hidden');
+        };
+
+        window.closeAiAssistant = function() {
+            document.getElementById('aiModal').classList.add('hidden');
+        };
+
+        window.setAiLanguage = function(lang) {
+            activeLanguage = lang;
+            document.getElementById('langEN').className = lang === 'en' ? 'px-2 py-1 rounded font-bold bg-brand-700 text-white' : 'px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200';
+            document.getElementById('langHI').className = lang === 'hi' ? 'px-2 py-1 rounded font-bold bg-brand-700 text-white' : 'px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200';
+            document.getElementById('langMR').className = lang === 'mr' ? 'px-2 py-1 rounded font-bold bg-brand-700 text-white' : 'px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200';
+
+            const greeting = document.getElementById('aiGreeting');
+            if (lang === 'hi') {
+                greeting.innerText = "नमस्कार! मैं आपका ग्रामफिनटेक एआई सहायक हूं। मुद्रा लोन, पीएम विश्वकर्मा, किसान क्रेडिट कार्ड, आवश्यक दस्तावेज और सबसे कम ब्याज दरों के बारे में पूछें!";
+            } else if (lang === 'mr') {
+                greeting.innerText = "नमस्कार! मी तुमचा ग्रामफिनटेक AI सहाय्यक आहे. मुद्रा कर्ज, पीएम विश्वकर्मा, किसान क्रेडिट कार्ड, लागणारी कागदपत्रे आणि सर्वात कमी व्याजदरांबद्दल विचारा!";
+            } else {
+                greeting.innerText = "Hello! I am your GramFintech AI Assistant. Ask me anything about Mudra loans, PM Vishwakarma, Kisan Credit Cards, documents needed, or lowest interest rates!";
+            }
+        };
+
+        const aiDatabase = {
+            mudra_docs: {
+                en: "For a MUDRA Loan, you need: 1. Identity Proof (Aadhaar/Voter ID), 2. Residence proof, 3. Shop/Business address proof, 4. Bank account statement (last 6 months), and 5. Passport photos.",
+                hi: "मुद्रा लोन के लिए आवश्यक दस्तावेज: 1. पहचान पत्र (आधार/वोटर आईडी), 2. निवास प्रमाण, 3. दुकान/व्यापार का पता, 4. 6 महीने का बैंक स्टेटमेंट, और 5. पासपोर्ट फोटो।",
+                mr: "मुद्रा कर्जासाठी कागदपत्रे: 1. ओळखपत्र (आधार/मतदार कार्ड), 2. रहिवासी दाखला, 3. व्यवसायाचा पत्ता, 4. गेल्या ६ महिन्यांचे बँक स्टेटमेंट, आणि 5. पासपोर्ट फोटो."
+            },
+            vishwakarma_benefit: {
+                en: "PM Vishwakarma offers: 1. ₹15,000 free toolkit voucher, 2. ₹500/day stipend during skill training, and 3. Collateral-free loans up to ₹3 Lakhs at only 5% interest rate!",
+                hi: "पीएम विश्वकर्मा योजना के लाभ: 1. ₹15,000 का टूलकिट वाउचर, 2. ट्रेनिंग के दौरान ₹500/दिन वजीफा, और 3. बिना गारंटी के ₹3 लाख तक का लोन सिर्फ 5% ब्याज दर पर!",
+                mr: "पीएम विश्वकर्मा योजनेचे फायदे: 1. ₹15,000 चा टूलकिट व्हाऊचर, 2. प्रशिक्षणादरम्यान ₹500/दिवस भत्ता, आणि 3. विनातारण ₹3 लाखांपर्यंत कर्ज फक्त 5% व्याजदराने!"
+            },
+            kcc_dairy: {
+                en: "Yes! Kisan Credit Card (KCC) is available for Dairy Farming & Cattle upkeep up to ₹2 Lakhs at 4% effective interest rate with prompt repayment subvention.",
+                hi: "हाँ! डेयरी उद्योग और पशुपालन के लिए किसान क्रेडिट कार्ड (KCC) उपलब्ध है। समय पर भुगतान करने पर प्रभावी ब्याज दर सिर्फ 4% सालाना है!",
+                mr: "होय! दुग्धव्यवसाय आणि पशुपालनासाठी किसान क्रेडिट कार्ड (KCC) उपलब्ध आहे. वेळेवर परतफेड केल्यास प्रभावी व्याजदर फक्त 4% पडतो!"
+            }
+        };
+
+        window.sendQuickQuestion = function(key) {
+            const chat = document.getElementById('chatContainer');
+            const resp = aiDatabase[key][activeLanguage];
+
+            chat.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-brand-700 text-white p-2.5 rounded-2xl rounded-tr-none max-w-[80%] text-[11px]">
+                        Query selected
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[85%] text-slate-800 leading-relaxed text-[11px]">
+                        🤖 ${resp}
+                    </div>
+                </div>
+            `;
+            chat.scrollTop = chat.scrollHeight;
+        };
+
+        window.sendCustomAiMessage = function() {
+            const input = document.getElementById('aiInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chat = document.getElementById('chatContainer');
+            chat.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-brand-700 text-white p-2.5 rounded-2xl rounded-tr-none max-w-[80%] text-[11px]">
+                        ${text}
+                    </div>
+                </div>
+            `;
+
+            let reply = "Our AI team and local Gramin Bank representative will evaluate your request for: " + text;
+            if (activeLanguage === 'hi') reply = "ग्रामफिनटेक सलाहकार जल्द ही आपकी मदद करेगा। आपकी क्वेरी दर्ज की गई है: " + text;
+            if (activeLanguage === 'mr') reply = "ग्रामफिनटेक सल्लागार लवकरच तुम्हाला मदत करेल. तुमची विचारणा नोंदवली गेली आहे: " + text;
+
+            setTimeout(() => {
+                chat.innerHTML += `
+                    <div class="flex justify-start">
+                        <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[85%] text-slate-800 leading-relaxed text-[11px]">
+                            🤖 ${reply}
+                        </div>
+                    </div>
+                `;
+                chat.scrollTop = chat.scrollHeight;
+            }, 600);
+
+            input.value = '';
+        };
+
+        // Authentication Handlers
         window.switchAuthTab = function(type) {
             isSignup = (type === 'signup');
             document.getElementById('nameGroup').classList.toggle('hidden', !isSignup);
