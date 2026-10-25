@@ -2,8 +2,16 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- Android Chrome Native Theme & Mobile Web App Meta -->
+    <meta name="theme-color" content="#064e3b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    
     <title>GramFintech Hub - Rural Enterprise & Credit Portal</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -31,48 +39,63 @@
             }
         }
     </script>
+    <style>
+        /* Touch scroll momentum for Android */
+        .touch-scroll {
+            -webkit-overflow-scrolling: touch;
+        }
+        /* Custom scrollbars for small screens */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #047857;
+            border-radius: 99px;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen relative">
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen relative pb-20 md:pb-0 select-none sm:select-text">
 
     <!-- 1. LOGIN & AUTHENTICATION MODAL -->
-    <div id="authModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
-            <div class="bg-brand-900 p-6 text-white text-center">
-                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+    <div id="authModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[92vh] flex flex-col">
+            <div class="bg-brand-900 p-5 text-white text-center relative shrink-0">
+                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-2">
                     <i class="fa-solid fa-wheat-awn text-brand-50 text-2xl"></i>
                 </div>
-                <h2 class="text-2xl font-bold">GramFintech Hub</h2>
-                <p class="text-xs text-brand-100 mt-1">Rural Entrepreneur Portal Login</p>
+                <h2 class="text-xl sm:text-2xl font-bold">GramFintech Hub</h2>
+                <p class="text-xs text-brand-100 mt-0.5">Rural Entrepreneur Portal Login</p>
             </div>
 
-            <div class="p-6 space-y-4">
-                <div class="flex border-b border-slate-200 mb-4">
-                    <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm">Sign In</button>
-                    <button id="tabSignup" onclick="switchAuthTab('signup')" class="flex-1 py-2 font-semibold text-slate-400 text-sm">Register</button>
+            <div class="p-5 sm:p-6 space-y-4 overflow-y-auto touch-scroll">
+                <div class="flex border-b border-slate-200 mb-2">
+                    <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm active:scale-95 transition">Sign In</button>
+                    <button id="tabSignup" onclick="switchAuthTab('signup')" class="flex-1 py-3 font-semibold text-slate-400 text-sm active:scale-95 transition">Register</button>
                 </div>
 
                 <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
                     <div id="nameGroup" class="hidden space-y-1">
                         <label class="text-xs font-semibold text-slate-600">Full Name</label>
-                        <input type="text" id="authName" placeholder="e.g. Ramesh Kumar" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                        <input type="text" id="authName" placeholder="e.g. Ramesh Kumar" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
 
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-600">Email Address / User ID</label>
-                        <input type="email" id="authEmail" required placeholder="entrepreneur@gram.in" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                        <input type="email" id="authEmail" required placeholder="entrepreneur@gram.in" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
 
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-600">Password</label>
-                        <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                        <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
 
-                    <button type="submit" id="authSubmitBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm rounded-lg shadow-md transition-all">
+                    <button type="submit" id="authSubmitBtn" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-md transition-all">
                         Sign In to Access Portal
                     </button>
                 </form>
 
-                <div id="authStatus" class="hidden p-3 rounded-lg text-xs font-medium text-center"></div>
+                <div id="authStatus" class="hidden p-3 rounded-xl text-xs font-medium text-center"></div>
 
                 <div class="pt-2 border-t border-slate-100 text-center">
                     <p class="text-[11px] text-slate-500">Connected to Cloud Database Backend</p>
@@ -82,11 +105,11 @@
     </div>
 
     <!-- 2. ASK TO EXPERT MODAL -->
-    <div id="expertModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
+    <div id="expertModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
             <div class="bg-brand-900 p-5 text-white flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
                         <i class="fa-solid fa-headset text-brand-100 text-xl"></i>
                     </div>
                     <div>
@@ -94,10 +117,10 @@
                         <p class="text-xs text-brand-200">Live Support & Advisory</p>
                     </div>
                 </div>
-                <button onclick="closeExpertModal()" class="text-slate-300 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeExpertModal()" class="text-slate-300 hover:text-white p-2 text-xl active:scale-95"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="p-6 space-y-5 text-sm">
+            <div class="p-5 sm:p-6 space-y-5 text-sm">
                 <div class="bg-brand-50 p-4 rounded-xl border border-brand-200 space-y-2">
                     <h4 class="font-bold text-brand-900 flex items-center gap-2">
                         <i class="fa-solid fa-circle-info text-brand-600"></i> What is this Feature?
@@ -110,17 +133,17 @@
                 <div class="space-y-2 text-xs text-slate-700">
                     <p class="font-bold text-slate-900"><i class="fa-solid fa-clock text-amber-600 mr-1.5"></i> When should you use this?</p>
                     <ul class="list-disc list-inside space-y-1 text-slate-600">
-                        <li>If you need personalized guidance on choosing the right government scheme.</li>
-                        <li>If you require assistance preparing required loan documents (Aadhaar, Bank Statement, 7/12 land extract).</li>
-                        <li>If you need help filling out online credit applications.</li>
+                        <li>If you need personalized guidance on government schemes.</li>
+                        <li>If you need help preparing loan documents (Aadhaar, Bank Statement, 7/12 extract).</li>
+                        <li>If you need live help filling online applications.</li>
                     </ul>
                 </div>
 
                 <div class="pt-3 border-t border-slate-200 space-y-3">
-                    <a href="tel:8624877182" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm text-center">
+                    <a href="tel:8624877182" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm text-center">
                         <i class="fa-solid fa-phone-volume text-lg"></i> Call Expert Now (+91 8624877182)
                     </a>
-                    <button onclick="closeExpertModal()" class="w-full py-2 text-xs text-slate-500 hover:text-slate-800 font-semibold">
+                    <button onclick="closeExpertModal()" class="w-full py-2.5 text-xs text-slate-500 hover:text-slate-800 font-semibold active:scale-95">
                         Cancel & Return to Portal
                     </button>
                 </div>
@@ -129,30 +152,30 @@
     </div>
 
     <!-- 3. SCHEME DETAILS MODAL -->
-    <div id="schemeModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <div class="bg-brand-900 p-6 text-white flex justify-between items-start sticky top-0 z-10">
+    <div id="schemeModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-100 max-h-[88vh] overflow-y-auto touch-scroll">
+            <div class="bg-brand-900 p-5 sm:p-6 text-white flex justify-between items-start sticky top-0 z-10">
                 <div>
                     <span id="modalSchemeTag" class="text-[10px] font-extrabold uppercase bg-brand-700 text-brand-100 px-2.5 py-1 rounded-full border border-brand-600">SCHEME DETAILS</span>
-                    <h3 id="modalSchemeTitle" class="text-2xl font-bold mt-2">Scheme Name</h3>
+                    <h3 id="modalSchemeTitle" class="text-xl sm:text-2xl font-bold mt-2">Scheme Name</h3>
                 </div>
-                <button onclick="closeSchemeModal()" class="text-slate-300 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeSchemeModal()" class="text-slate-300 hover:text-white p-2 text-xl active:scale-95"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="p-6 space-y-6 text-sm text-slate-700">
+            <div class="p-5 sm:p-6 space-y-5 text-sm text-slate-700">
                 <div>
                     <h4 class="font-bold text-slate-900 text-base mb-1"><i class="fa-solid fa-circle-info text-brand-600 mr-2"></i>Overview & Key Benefits</h4>
-                    <p id="modalSchemeDesc" class="text-slate-600 leading-relaxed">Detailed overview will appear here.</p>
+                    <p id="modalSchemeDesc" class="text-slate-600 leading-relaxed text-xs sm:text-sm">Detailed overview will appear here.</p>
                 </div>
 
-                <div class="grid sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-200">
                     <div>
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Interest Rate / Benefit</span>
-                        <p id="modalSchemeInterest" class="font-bold text-brand-700 text-base">Subsidized Interest</p>
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">Interest Rate / Benefit</span>
+                        <p id="modalSchemeInterest" class="font-bold text-brand-700 text-sm sm:text-base">Subsidized Interest</p>
                     </div>
                     <div>
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Maximum Credit Limit</span>
-                        <p id="modalSchemeLimit" class="font-bold text-slate-900 text-base">Up to ₹5,00,000</p>
+                        <span class="text-[10px] sm:text-xs font-semibold text-slate-500 uppercase">Maximum Credit Limit</span>
+                        <p id="modalSchemeLimit" class="font-bold text-slate-900 text-sm sm:text-base">Up to ₹5,00,000</p>
                     </div>
                 </div>
 
@@ -167,8 +190,8 @@
                 </div>
 
                 <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <button onclick="closeSchemeModal()" class="w-full sm:w-auto px-5 py-2.5 border border-slate-300 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 text-xs">Close</button>
-                    <button onclick="openLoanModalFromScheme()" class="w-full sm:w-auto px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-2">
+                    <button onclick="closeSchemeModal()" class="w-full sm:w-auto px-5 py-3 border border-slate-300 rounded-xl font-semibold text-slate-600 hover:bg-slate-100 text-xs active:scale-95">Close</button>
+                    <button onclick="openLoanModalFromScheme()" class="w-full sm:w-auto px-6 py-3.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition text-xs flex items-center justify-center gap-2">
                         <i class="fa-solid fa-paper-plane"></i> Apply / Request Loan Now
                     </button>
                 </div>
@@ -177,11 +200,11 @@
     </div>
 
     <!-- 4. REQUEST LOAN APPLICATION MODAL -->
-    <div id="loanModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto">
+    <div id="loanModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto touch-scroll">
             <div class="bg-brand-900 p-5 text-white flex justify-between items-center sticky top-0 z-10">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
                         <i class="fa-solid fa-hand-holding-hand text-brand-100 text-xl"></i>
                     </div>
                     <div>
@@ -189,13 +212,13 @@
                         <p class="text-xs text-brand-200">Rural Credit & Subvention Application</p>
                     </div>
                 </div>
-                <button onclick="closeLoanModal()" class="text-slate-300 hover:text-white text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeLoanModal()" class="text-slate-300 hover:text-white p-2 text-xl active:scale-95"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <form onsubmit="submitLoanRequest(event)" class="p-6 space-y-4">
+            <form onsubmit="submitLoanRequest(event)" class="p-5 sm:p-6 space-y-4">
                 <div class="space-y-1">
                     <label class="text-xs font-semibold text-slate-700">Preferred Scheme</label>
-                    <select id="loanSchemeSelect" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none bg-white font-medium text-slate-800">
+                    <select id="loanSchemeSelect" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none bg-white font-medium text-slate-800">
                         <option value="MUDRA Yojana (Shishu/Kishor)">MUDRA Yojana (Micro-Business & Retail)</option>
                         <option value="PM Vishwakarma Yojana">PM Vishwakarma (Artisans & Craftsmen)</option>
                         <option value="Kisan Credit Card (KCC)">Kisan Credit Card (Dairy & Agri Capital)</option>
@@ -203,39 +226,40 @@
                     </select>
                 </div>
 
-                <div class="grid sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-700">Loan Amount Needed (₹)</label>
-                        <!-- FIXED: Removed restrictive constraints so user can type any custom number freely -->
-                        <input type="number" id="loanAmountReq" required placeholder="Type amount (e.g. 75000)" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none font-semibold">
+                        <!-- ANDROID NUMERIC KEYPAD INPUT -->
+                        <input type="number" id="loanAmountReq" inputmode="numeric" required placeholder="Type amount (e.g. 75000)" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold">
                     </div>
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-700">Business Activity / Purpose</label>
-                        <input type="text" id="loanPurpose" required placeholder="e.g. Kirana Shop, Dairy Cows, Carpentry" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                        <input type="text" id="loanPurpose" required placeholder="e.g. Kirana Shop, Dairy Cows" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
                 </div>
 
-                <div class="grid sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-700">Mobile Number</label>
-                        <input type="tel" id="loanMobile" required placeholder="10-digit number" pattern="[0-9]{10}" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                        <!-- ANDROID PHONE KEYPAD INPUT -->
+                        <input type="tel" id="loanMobile" inputmode="numeric" required placeholder="10-digit number" pattern="[0-9]{10}" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-700">Village / District Name</label>
-                        <input type="text" id="loanLocation" required placeholder="e.g. Khed, Pune" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
+                        <input type="text" id="loanLocation" required placeholder="e.g. Khed, Pune" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
                 </div>
 
                 <div class="p-3 bg-brand-50 rounded-xl border border-brand-200 text-xs text-brand-900 space-y-1">
                     <p class="font-bold"><i class="fa-solid fa-shield-halved text-brand-600 mr-1"></i> Lowest Interest Guarantee:</p>
-                    <p class="text-[11px] text-brand-800">Your application will automatically be mapped to government subvention schemes offering interest rates as low as **5% – 7% p.a.**</p>
+                    <p class="text-[11px] text-brand-800">Your application will automatically be mapped to subvention schemes offering interest rates as low as **5% – 7% p.a.**</p>
                 </div>
 
-                <button type="submit" id="loanSubmitBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+                <button type="submit" id="loanSubmitBtn" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
                     <i class="fa-solid fa-paper-plane"></i> Submit Loan Application
                 </button>
 
-                <div id="loanStatus" class="hidden p-3 rounded-lg text-xs font-semibold text-center"></div>
+                <div id="loanStatus" class="hidden p-3 rounded-xl text-xs font-semibold text-center"></div>
             </form>
         </div>
     </div>
@@ -250,23 +274,23 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-sm">GramFintech AI Assistant</h3>
-                        <p class="text-[10px] text-brand-200">Rural Scheme & Credit Advisory</p>
+                        <p class="text-[10px] text-brand-200">Rural Scheme Advisory</p>
                     </div>
                 </div>
-                <button onclick="closeAiAssistant()" class="text-slate-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeAiAssistant()" class="text-slate-300 hover:text-white p-2 text-lg active:scale-95"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center justify-between text-xs">
-                <span class="font-semibold text-slate-600"><i class="fa-solid fa-language mr-1 text-brand-600"></i> Select Language:</span>
+            <div class="bg-slate-100 px-3 py-2 border-b border-slate-200 flex items-center justify-between text-xs">
+                <span class="font-semibold text-slate-600"><i class="fa-solid fa-language text-brand-600 mr-1"></i> Language:</span>
                 <div class="flex gap-1">
-                    <button id="langEN" onclick="setAiLanguage('en')" class="px-2 py-1 rounded font-bold bg-brand-700 text-white">English</button>
-                    <button id="langHI" onclick="setAiLanguage('hi')" class="px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200">हिंदी</button>
-                    <button id="langMR" onclick="setAiLanguage('mr')" class="px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200">मराठी</button>
+                    <button id="langEN" onclick="setAiLanguage('en')" class="px-2.5 py-1 rounded-lg font-bold bg-brand-700 text-white active:scale-95">English</button>
+                    <button id="langHI" onclick="setAiLanguage('hi')" class="px-2.5 py-1 rounded-lg font-semibold bg-white text-slate-700 hover:bg-slate-200 active:scale-95">हिंदी</button>
+                    <button id="langMR" onclick="setAiLanguage('mr')" class="px-2.5 py-1 rounded-lg font-semibold bg-white text-slate-700 hover:bg-slate-200 active:scale-95">मराठी</button>
                 </div>
             </div>
 
-            <div id="chatContainer" class="flex-grow p-4 space-y-3 overflow-y-auto bg-slate-50 text-xs">
-                <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[85%] space-y-1">
+            <div id="chatContainer" class="flex-grow p-4 space-y-3 overflow-y-auto touch-scroll bg-slate-50 text-xs">
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[88%] space-y-1">
                     <p id="aiGreeting" class="font-medium text-slate-800">
                         Hello! I am your GramFintech AI Assistant. Ask me anything about Mudra loans, PM Vishwakarma, Kisan Credit Cards, documents needed, or lowest interest rates!
                     </p>
@@ -275,13 +299,13 @@
                 <div class="pt-2">
                     <p class="text-[10px] font-bold uppercase text-slate-400 mb-2">Quick Questions:</p>
                     <div id="quickQuestions" class="flex flex-col gap-1.5">
-                        <button onclick="sendQuickQuestion('mudra_docs')" class="text-left bg-brand-50 hover:bg-brand-100 text-brand-800 p-2 rounded-lg border border-brand-200 transition text-[11px] font-medium">
+                        <button onclick="sendQuickQuestion('mudra_docs')" class="text-left bg-brand-50 hover:bg-brand-100 active:scale-95 text-brand-800 p-2.5 rounded-xl border border-brand-200 transition text-[11px] font-medium">
                             📌 What documents are required for MUDRA Loan?
                         </button>
-                        <button onclick="sendQuickQuestion('vishwakarma_benefit')" class="text-left bg-brand-50 hover:bg-brand-100 text-brand-800 p-2 rounded-lg border border-brand-200 transition text-[11px] font-medium">
+                        <button onclick="sendQuickQuestion('vishwakarma_benefit')" class="text-left bg-brand-50 hover:bg-brand-100 active:scale-95 text-brand-800 p-2.5 rounded-xl border border-brand-200 transition text-[11px] font-medium">
                             🔨 How to get ₹15,000 toolkit in PM Vishwakarma?
                         </button>
-                        <button onclick="sendQuickQuestion('kcc_dairy')" class="text-left bg-brand-50 hover:bg-brand-100 text-brand-800 p-2 rounded-lg border border-brand-200 transition text-[11px] font-medium">
+                        <button onclick="sendQuickQuestion('kcc_dairy')" class="text-left bg-brand-50 hover:bg-brand-100 active:scale-95 text-brand-800 p-2.5 rounded-xl border border-brand-200 transition text-[11px] font-medium">
                             🐄 Can I get Kisan Credit Card for Dairy & Cattle?
                         </button>
                     </div>
@@ -289,42 +313,38 @@
             </div>
 
             <div class="p-3 bg-white border-t border-slate-200 flex gap-2">
-                <input type="text" id="aiInput" placeholder="Ask in English, हिंदी, or मराठी..." class="flex-grow px-3 py-2 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-brand-500" onkeypress="if(event.key==='Enter') sendCustomAiMessage()">
-                <button onclick="sendCustomAiMessage()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs transition">
+                <input type="text" id="aiInput" placeholder="Ask in English, हिंदी, or मराठी..." class="flex-grow px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs outline-none focus:ring-2 focus:ring-brand-500" onkeypress="if(event.key==='Enter') sendCustomAiMessage()">
+                <button onclick="sendCustomAiMessage()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-xl text-xs transition">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN NAVBAR -->
+    <!-- MAIN TOP NAVBAR -->
     <header class="bg-brand-900 text-white sticky top-0 z-40 shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                    <i class="fa-solid fa-wheat-awn text-brand-50 text-xl"></i>
+            <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-wheat-awn text-brand-50 text-lg sm:text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-lg leading-tight">GramFintech</h1>
-                    <p class="text-[10px] text-brand-100 uppercase tracking-widest font-semibold">Rural Enterprise Portal</p>
+                    <h1 class="font-extrabold text-base sm:text-lg leading-tight">GramFintech</h1>
+                    <p class="text-[9px] sm:text-[10px] text-brand-100 uppercase tracking-widest font-semibold">Rural Enterprise Portal</p>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-2 sm:space-x-3">
-                <!-- NEW FEATURE 4: Ask to Expert Button -->
-                <button onclick="openExpertModal()" class="text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1">
-                    <i class="fa-solid fa-headset"></i> Ask to Expert
+            <div class="flex items-center space-x-1.5 sm:space-x-3">
+                <button onclick="openExpertModal()" class="hidden sm:flex text-xs bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-slate-950 font-extrabold px-3 py-2 rounded-xl shadow transition items-center gap-1">
+                    <i class="fa-solid fa-headset"></i> Ask Expert
                 </button>
-                <button onclick="openLoanModal()" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold px-3 py-1.5 rounded-lg shadow transition flex items-center gap-1">
-                    <i class="fa-solid fa-hand-holding-dollar"></i> <span class="hidden sm:inline">Request</span> Loan
+                <button onclick="openLoanModal()" class="text-xs bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-900 font-extrabold px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
+                    <i class="fa-solid fa-hand-holding-dollar"></i> Request Loan
                 </button>
-                <button onclick="openAiAssistant()" class="text-xs bg-brand-700 hover:bg-brand-600 text-brand-50 px-3 py-1.5 rounded-lg border border-brand-500 transition flex items-center gap-1 font-semibold">
-                    <i class="fa-solid fa-robot text-brand-200"></i> AI Assistant
-                </button>
-                <span id="userBadge" class="hidden md:inline-block text-xs bg-brand-800 px-3 py-1 rounded-full text-brand-100 border border-brand-700">
+                <span id="userBadge" class="hidden lg:inline-block text-xs bg-brand-800 px-3 py-1.5 rounded-full text-brand-100 border border-brand-700">
                     <i class="fa-solid fa-user-circle mr-1"></i> <span id="userEmailDisplay">Logged In</span>
                 </span>
-                <button onclick="handleLogout()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg transition font-medium">
+                <button onclick="handleLogout()" class="text-xs bg-red-600 hover:bg-red-700 active:scale-95 text-white p-2 sm:px-3 sm:py-2 rounded-xl transition font-medium">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </div>
@@ -332,20 +352,20 @@
     </header>
 
     <!-- HERO BANNER -->
-    <section class="bg-gradient-to-b from-brand-900 to-brand-800 text-white py-10 px-4">
+    <section class="bg-gradient-to-b from-brand-900 to-brand-800 text-white py-8 sm:py-12 px-4">
         <div class="container mx-auto max-w-5xl text-center space-y-3">
-            <span class="inline-block bg-brand-700 text-brand-100 text-xs px-3 py-1 rounded-full font-semibold border border-brand-600">
+            <span class="inline-block bg-brand-700 text-brand-100 text-[11px] sm:text-xs px-3 py-1 rounded-full font-semibold border border-brand-600">
                 Solving Rural Digital Financial Inclusion
             </span>
-            <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight">Bridging the Gap Between Rural Business & Digital Capital</h2>
-            <p class="text-slate-200 text-xs md:text-sm max-w-3xl mx-auto leading-relaxed">
+            <h2 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">Bridging the Gap Between Rural Business & Digital Capital</h2>
+            <p class="text-slate-200 text-xs sm:text-sm max-w-3xl mx-auto leading-relaxed">
                 A dedicated platform designed for rural micro-entrepreneurs, dairy farmers, artisans, and small traders to access government schemes, micro-loans, digital payment tools, and AI guidance without jargon.
             </p>
-            <div class="pt-2 flex flex-wrap justify-center gap-3">
-                <button onclick="openLoanModal()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl shadow-lg transition text-xs flex items-center gap-2">
+            <div class="pt-2 flex flex-wrap justify-center gap-2.5">
+                <button onclick="openLoanModal()" class="w-full sm:w-auto px-5 py-3 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-2">
                     <i class="fa-solid fa-file-signature"></i> Apply for Micro-Loan Now
                 </button>
-                <button onclick="openExpertModal()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold rounded-xl shadow-lg transition text-xs flex items-center gap-2">
+                <button onclick="openExpertModal()" class="w-full sm:w-auto px-5 py-3 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-slate-950 font-bold rounded-xl shadow-lg transition text-xs flex items-center justify-center gap-2">
                     <i class="fa-solid fa-headset"></i> Call Expert Support
                 </button>
             </div>
@@ -353,16 +373,16 @@
     </section>
 
     <!-- MAIN DASHBOARD CONTENT -->
-    <main class="flex-grow container mx-auto px-4 py-8 space-y-10">
+    <main class="flex-grow container mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-8 sm:space-y-10">
 
-        <!-- NEW FEATURE 3: Tailored Financial Scheme Finder Overview & JanSamarth Portal Redirect -->
-        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+        <!-- SCHEME FINDER OVERVIEW & JANSAMARTH INTEGRATION -->
+        <section class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
             <div class="border-b pb-4 space-y-2">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-hand-holding-dollar text-brand-600"></i> Tailored Financial Scheme Finder
                     </h3>
-                    <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="self-start sm:self-auto px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white font-bold rounded-xl shadow transition text-xs flex items-center gap-2">
+                    <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-4 py-2.5 bg-brand-700 hover:bg-brand-800 active:scale-95 text-white font-bold rounded-xl shadow transition text-xs flex items-center justify-center gap-2">
                         <i class="fa-solid fa-external-link-alt"></i> Launch Govt JanSamarth Scheme Finder
                     </a>
                 </div>
@@ -374,7 +394,7 @@
                         <span class="font-bold text-brand-800"><i class="fa-solid fa-building-columns text-brand-600 mr-1"></i> Official Government Portal Integration:</span>
                         <p class="text-[11px] text-brand-700 mt-0.5">Click the Finder button to access the official Government <strong>JanSamarth Portal</strong> for end-to-end official loan review and approval directly with partner banks.</p>
                     </div>
-                    <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="shrink-0 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold rounded-lg transition text-xs flex items-center gap-1.5">
+                    <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto shrink-0 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold rounded-xl transition text-xs flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-paper-plane"></i> Find Real Loan Schemes Now
                     </a>
                 </div>
@@ -382,41 +402,41 @@
 
             <div class="space-y-3">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Or Preview Popular Schemes Below (Click Cards for Guidance):</h4>
-                <div class="grid md:grid-cols-3 gap-5">
-                    <div onclick="openSchemeModal('mudra')" class="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
-                        <div class="flex justify-between items-start mb-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+                    <div onclick="openSchemeModal('mudra')" class="p-4 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 active:scale-98 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-2">
                             <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-lg">MUDRA Yojana</span>
-                            <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">View Details <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">Details <i class="fa-solid fa-arrow-right ml-0.5"></i></span>
                         </div>
-                        <h4 class="font-bold text-slate-900 text-lg group-hover:text-brand-700 transition">Shishu & Kishor Loans</h4>
-                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">Collateral-free loans up to ₹5,00,000 for shopkeepers, artisans, and small processing units.</p>
-                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
+                        <h4 class="font-bold text-slate-900 text-base sm:text-lg group-hover:text-brand-700 transition">Shishu & Kishor Loans</h4>
+                        <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">Collateral-free loans up to ₹5,00,000 for shopkeepers, artisans, and small processing units.</p>
+                        <div class="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
                             <span><i class="fa-solid fa-percent text-brand-600"></i> ~8.5% p.a.</span>
                             <span class="font-bold text-slate-700">No Collateral</span>
                         </div>
                     </div>
 
-                    <div onclick="openSchemeModal('vishwakarma')" class="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
-                        <div class="flex justify-between items-start mb-3">
+                    <div onclick="openSchemeModal('vishwakarma')" class="p-4 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 active:scale-98 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-2">
                             <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-lg">PM Vishwakarma</span>
-                            <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">View Details <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">Details <i class="fa-solid fa-arrow-right ml-0.5"></i></span>
                         </div>
-                        <h4 class="font-bold text-slate-900 text-lg group-hover:text-brand-700 transition">Artisan Support Scheme</h4>
-                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">Skill training, ₹15,000 toolkit incentive, and 5% interest subvention credit for 18 traditional trades.</p>
-                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
+                        <h4 class="font-bold text-slate-900 text-base sm:text-lg group-hover:text-brand-700 transition">Artisan Support Scheme</h4>
+                        <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">Skill training, ₹15,000 toolkit incentive, and 5% interest subvention credit for 18 traditional trades.</p>
+                        <div class="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
                             <span><i class="fa-solid fa-gift text-brand-600"></i> ₹15k Toolkit Free</span>
                             <span class="font-bold text-slate-700">5% Interest</span>
                         </div>
                     </div>
 
-                    <div onclick="openSchemeModal('kcc')" class="p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
-                        <div class="flex justify-between items-start mb-3">
+                    <div onclick="openSchemeModal('kcc')" class="p-4 sm:p-5 rounded-2xl border border-slate-200 hover:border-brand-500 bg-slate-50 hover:bg-brand-50/40 active:scale-98 transition cursor-pointer group shadow-sm hover:shadow-md relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-2">
                             <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-lg">Kisan Credit Card</span>
-                            <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">View Details <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            <span class="text-xs font-semibold text-slate-400 group-hover:text-brand-600 transition">Details <i class="fa-solid fa-arrow-right ml-0.5"></i></span>
                         </div>
-                        <h4 class="font-bold text-slate-900 text-lg group-hover:text-brand-700 transition">Dairy & Agriculture KCC</h4>
-                        <p class="text-xs text-slate-600 mt-2 leading-relaxed">Low-interest working capital credit up to ₹2,00,000 for livestock, fodder, and farm upkeep.</p>
-                        <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
+                        <h4 class="font-bold text-slate-900 text-base sm:text-lg group-hover:text-brand-700 transition">Dairy & Agriculture KCC</h4>
+                        <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">Low-interest working capital credit up to ₹2,00,000 for livestock, fodder, and farm upkeep.</p>
+                        <div class="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center text-[11px] text-slate-500">
                             <span><i class="fa-solid fa-cow text-brand-600"></i> Dairy & Agri</span>
                             <span class="font-bold text-slate-700">3% Subvention</span>
                         </div>
@@ -426,9 +446,9 @@
         </section>
 
         <!-- CALCULATOR SECTION -->
-        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+        <section class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
             <div class="border-b pb-4">
-                <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-calculator text-brand-600 mr-2"></i> Micro-Loan EMI & Profit Estimator</h3>
+                <h3 class="text-lg sm:text-xl font-bold text-slate-800"><i class="fa-solid fa-calculator text-brand-600 mr-2"></i> Micro-Loan EMI & Profit Estimator</h3>
                 <p class="text-xs text-slate-500">Adjust the sliders to calculate exact monthly repayments before taking a loan.</p>
             </div>
 
@@ -439,7 +459,7 @@
                             <span>Loan Amount Required:</span>
                             <span id="loanAmountVal" class="text-base text-brand-700">₹50,000</span>
                         </div>
-                        <input type="range" id="loanAmount" min="10000" max="500000" step="5000" value="50000" oninput="calculateEMI()" class="w-full accent-brand-600 cursor-pointer">
+                        <input type="range" id="loanAmount" min="10000" max="500000" step="5000" value="50000" oninput="calculateEMI()" class="w-full accent-brand-600 cursor-pointer h-2">
                         <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                             <span>₹10,000</span>
                             <span>₹5,00,000</span>
@@ -451,7 +471,7 @@
                             <span>Repayment Tenure:</span>
                             <span id="loanTenureVal" class="text-base text-brand-700">24 Months</span>
                         </div>
-                        <input type="range" id="loanTenure" min="6" max="60" step="6" value="24" oninput="calculateEMI()" class="w-full accent-brand-600 cursor-pointer">
+                        <input type="range" id="loanTenure" min="6" max="60" step="6" value="24" oninput="calculateEMI()" class="w-full accent-brand-600 cursor-pointer h-2">
                         <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                             <span>6 Months</span>
                             <span>60 Months</span>
@@ -459,11 +479,11 @@
                     </div>
                 </div>
 
-                <div class="bg-brand-900 text-white p-6 rounded-2xl flex flex-col justify-center items-center text-center space-y-3 shadow-lg">
+                <div class="bg-brand-900 text-white p-5 sm:p-6 rounded-2xl flex flex-col justify-center items-center text-center space-y-3 shadow-lg">
                     <span class="text-xs font-semibold text-brand-200 uppercase tracking-wider">Estimated Monthly EMI</span>
-                    <span id="emiResult" class="text-4xl font-extrabold text-brand-50">₹2,284 / mo</span>
+                    <span id="emiResult" class="text-3xl sm:text-4xl font-extrabold text-brand-50">₹2,284 / mo</span>
                     <p class="text-[11px] text-brand-200">Calculated at standard rural micro-credit subvention rate (~8.5% p.a.)</p>
-                    <button onclick="openLoanModal()" class="mt-2 px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition">
+                    <button onclick="openLoanModal()" class="w-full sm:w-auto mt-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-bold rounded-xl text-xs transition">
                         Request This Amount Now
                     </button>
                 </div>
@@ -471,11 +491,37 @@
         </section>
     </main>
 
-    <!-- FLOATING AI ASSISTANT BUTTON -->
-    <button onclick="openAiAssistant()" class="fixed bottom-6 right-6 bg-brand-700 hover:bg-brand-800 text-white p-4 rounded-full shadow-2xl z-30 flex items-center gap-3 border-2 border-brand-400 transition transform hover:scale-105">
+    <!-- FLOATING AI ASSISTANT BUTTON (DESKTOP/TABLET) -->
+    <button onclick="openAiAssistant()" class="hidden md:flex fixed bottom-6 right-6 bg-brand-700 hover:bg-brand-800 text-white p-4 rounded-full shadow-2xl z-30 items-center gap-3 border-2 border-brand-400 transition transform hover:scale-105 active:scale-95">
         <i class="fa-solid fa-robot text-2xl"></i>
-        <span class="hidden sm:inline font-bold text-xs pr-1">Ask AI (हिंदी / मराठी)</span>
+        <span class="font-bold text-xs pr-1">Ask AI (हिंदी / मराठी)</span>
     </button>
+
+    <!-- ONE-HANDED ANDROID BOTTOM NAVIGATION BAR (MOBILE ONLY) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-brand-900 text-slate-300 border-t border-brand-800 z-40 md:hidden flex justify-around items-center px-1 py-2 shadow-2xl backdrop-blur-lg">
+        <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-brand-100 active:scale-95">
+            <i class="fa-solid fa-house text-lg mb-0.5"></i>
+            Home
+        </button>
+        <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-brand-100 active:scale-95">
+            <i class="fa-solid fa-building-columns text-lg mb-0.5 text-amber-400"></i>
+            Schemes
+        </a>
+        <button onclick="openLoanModal()" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-amber-400 active:scale-95">
+            <div class="w-9 h-9 bg-amber-500 text-slate-950 rounded-full flex items-center justify-center shadow-lg -mt-4 mb-0.5 border-2 border-brand-900">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+            </div>
+            Apply Loan
+        </button>
+        <button onclick="openExpertModal()" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-emerald-400 active:scale-95">
+            <i class="fa-solid fa-headset text-lg mb-0.5"></i>
+            Expert
+        </button>
+        <button onclick="openAiAssistant()" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-brand-100 active:scale-95">
+            <i class="fa-solid fa-robot text-lg mb-0.5 text-brand-200"></i>
+            Ask AI
+        </button>
+    </nav>
 
     <!-- FOOTER -->
     <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs">
@@ -627,7 +673,7 @@
             const mobile = document.getElementById('loanMobile').value;
             const location = document.getElementById('loanLocation').value;
 
-            statusDiv.className = "p-3 rounded-lg text-xs font-semibold text-center bg-blue-50 text-blue-700 block";
+            statusDiv.className = "p-3 rounded-xl text-xs font-semibold text-center bg-blue-50 text-blue-700 block";
             statusDiv.innerText = "Submitting application to Firestore Database...";
             submitBtn.disabled = true;
 
@@ -645,7 +691,7 @@
                     timestamp: serverTimestamp()
                 });
 
-                statusDiv.className = "p-3 rounded-lg text-xs font-semibold text-center bg-emerald-50 text-emerald-700 block";
+                statusDiv.className = "p-3 rounded-xl text-xs font-semibold text-center bg-emerald-50 text-emerald-700 block";
                 statusDiv.innerHTML = "✅ Loan Application Submitted Successfully! Saved live in Firestore.";
                 setTimeout(() => {
                     closeLoanModal();
@@ -653,7 +699,7 @@
                     submitBtn.disabled = false;
                 }, 2500);
             } catch (err) {
-                statusDiv.className = "p-3 rounded-lg text-xs font-semibold text-center bg-red-50 text-red-700 block";
+                statusDiv.className = "p-3 rounded-xl text-xs font-semibold text-center bg-red-50 text-red-700 block";
                 statusDiv.innerText = "Error saving request: " + (err.message || "Check database rules.");
                 submitBtn.disabled = false;
             }
@@ -670,9 +716,9 @@
 
         window.setAiLanguage = function(lang) {
             activeLanguage = lang;
-            document.getElementById('langEN').className = lang === 'en' ? 'px-2 py-1 rounded font-bold bg-brand-700 text-white' : 'px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200';
-            document.getElementById('langHI').className = lang === 'hi' ? 'px-2 py-1 rounded font-bold bg-brand-700 text-white' : 'px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200';
-            document.getElementById('langMR').className = lang === 'mr' ? 'px-2 py-1 rounded font-bold bg-brand-700 text-white' : 'px-2 py-1 rounded font-semibold bg-white text-slate-700 hover:bg-slate-200';
+            document.getElementById('langEN').className = lang === 'en' ? 'px-2.5 py-1 rounded-lg font-bold bg-brand-700 text-white' : 'px-2.5 py-1 rounded-lg font-semibold bg-white text-slate-700 hover:bg-slate-200';
+            document.getElementById('langHI').className = lang === 'hi' ? 'px-2.5 py-1 rounded-lg font-bold bg-brand-700 text-white' : 'px-2.5 py-1 rounded-lg font-semibold bg-white text-slate-700 hover:bg-slate-200';
+            document.getElementById('langMR').className = lang === 'mr' ? 'px-2.5 py-1 rounded-lg font-bold bg-brand-700 text-white' : 'px-2.5 py-1 rounded-lg font-semibold bg-white text-slate-700 hover:bg-slate-200';
 
             const greeting = document.getElementById('aiGreeting');
             if (lang === 'hi') {
@@ -713,7 +759,7 @@
                     </div>
                 </div>
                 <div class="flex justify-start">
-                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[85%] text-slate-800 leading-relaxed text-[11px]">
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[88%] text-slate-800 leading-relaxed text-[11px]">
                         🤖 ${resp}
                     </div>
                 </div>
@@ -721,7 +767,6 @@
             chat.scrollTop = chat.scrollHeight;
         };
 
-        // NEW FEATURE 1: Smarter AI logic handling greetings and specific scheme queries
         window.sendCustomAiMessage = function() {
             const input = document.getElementById('aiInput');
             const text = input.value.trim();
@@ -753,13 +798,13 @@
                 } else if (lower.includes("interest") || lower.includes("rate")) {
                     reply = "Our schemes offer subsidized rates: PM Vishwakarma @ 5%, KCC for Dairy/Agri @ 4% (effective), and MUDRA @ ~8.5% p.a.";
                 } else if (lower.includes("apply") || lower.includes("loan")) {
-                    reply = "You can request a loan instantly by clicking the yellow 'Request Loan' button in the top navigation bar or on any scheme card!";
+                    reply = "You can request a loan instantly by clicking the yellow 'Request Loan' button or using the mobile bottom navigation bar!";
                 } else {
                     reply = "I understand you are asking about: '" + text + "'. For quick application, click 'Request Loan' or ask about MUDRA, Vishwakarma, or KCC schemes!";
                 }
             } else if (activeLanguage === 'hi') {
                 if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey") || lower.includes("नमस्ते") || lower.includes("नमस्कार")) {
-                    reply = "नमस्कार! ग्रामफिनटेक हब में आपका स्वागत है। मैं आपकी क्या सहायता कर सकता हूँ? आप मुद्रा लोन, पीएम विश्वकर्मा या केसीसी के बारे बारे में पूछ सकते हैं।";
+                    reply = "नमस्कार! ग्रामफिनटेक हब में आपका स्वागत है। मैं आपकी क्या सहायता कर सकता हूँ? आप मुद्रा लोन, पीएम विश्वकर्मा या केसीसी के बारे में पूछ सकते हैं।";
                 } else if (lower.includes("मुद्रा") || lower.includes("mudra")) {
                     reply = "मुद्रा योजना में छोटे दुकानदारों और व्यवसायों के लिए बिना गारंटी ₹5 लाख तक का लोन मिलता है। दस्तावेज: आधार कार्ड, निवास प्रमाण, 6 महीने का बैंक स्टेटमेंट।";
                 } else if (lower.includes("विश्वकर्मा") || lower.includes("vishwakarma")) {
@@ -769,7 +814,7 @@
                 } else if (lower.includes("दस्तावेज") || lower.includes("कागजात") || lower.includes("doc")) {
                     reply = "आवश्यक दस्तावेज: 1. आधार कार्ड/वोटर आईडी, 2. निवास प्रमाण पत्र, 3. बैंक पासबुक (6 महीने), 4. व्यवसाय या भूमि/पशुधन का विवरण।";
                 } else {
-                    reply = "आपकी क्वेरी दर्ज की गई: '" + text + "'। लोन आवेदन के लिए ऊपर दिए गए 'Request Loan' बटन पर क्लिक करें या मुद्रा, केसीसी, या विश्वकर्मा योजना टाइप करें।";
+                    reply = "आपकी क्वेरी दर्ज की गई: '" + text + "'। लोन आवेदन के लिए नीचे दिए गए 'Apply Loan' बटन पर क्लिक करें।";
                 }
             } else if (activeLanguage === 'mr') {
                 if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey") || lower.includes("नमस्कार")) {
@@ -777,20 +822,20 @@
                 } else if (lower.includes("मुद्रा") || lower.includes("mudra")) {
                     reply = "मुद्रा योजनेअंतर्गत छोट्या व्यावसायिकांना विनातारण ₹5 लाखांपर्यंत कर्ज मिळते. आवश्यक कागदपत्रे: आधार कार्ड, रहिवासी दाखला आणि 6 महिन्यांचे बँक स्टेटमेंट.";
                 } else if (lower.includes("विश्वकर्मा") || lower.includes("vishwakarma")) {
-                    reply = "पीएम विश्वकर्मा योजनेत कारागिरांना ₹15,00, टूलकिट वाउचर, ₹500/दिवस विद्यावेतन आणि फक्त 5% व्याजाने ₹3 लाखांपर्यंत कर्ज मिळते.";
+                    reply = "पीएम विश्वकर्मा योजनेत कारागिरांना ₹15,000 टूलकिट वाउचर, ₹500/दिवस विद्यावेतन आणि फक्त 5% व्याजाने ₹3 लाखांपर्यंत कर्ज मिळते.";
                 } else if (lower.includes("केसीसी") || lower.includes("kcc") || lower.includes("डेअरी") || lower.includes("किसान")) {
                     reply = "किसान क्रेडिट कार्ड (KCC) द्वारे शेती आणि दुग्धव्यवसायासाठी ₹2 लाखांपर्यंत कर्ज फक्त 4% प्रभावी व्याजदराने मिळते.";
                 } else if (lower.includes("कागदपत्रे") || lower.includes("कागद") || lower.includes("doc")) {
                     reply = "लागणारी कागदपत्रे: 1. आधार कार्ड, 2. रहिवासी दाखला, 3. 6 महिन्यांचे बँक पासबुक, 4. व्यवसायाचा किंवा जमिनीचा/जनावरांचा पुरावा.";
                 } else {
-                    reply = "आपली विचारणा: '" + text + "'. कर्जासाठी अर्ज करण्यासाठी वर दिलेल्या 'Request Loan' बटनावर क्लिक करा किंवा मुद्रा, केसीसी बद्दल विचारा.";
+                    reply = "आपली विचारणा: '" + text + "'. कर्जासाठी अर्ज करण्यासाठी खालील 'Apply Loan' बटनावर क्लिक करा.";
                 }
             }
 
             setTimeout(() => {
                 chat.innerHTML += `
                     <div class="flex justify-start">
-                        <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[85%] text-slate-800 leading-relaxed text-[11px]">
+                        <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 max-w-[88%] text-slate-800 leading-relaxed text-[11px]">
                             🤖 ${reply}
                         </div>
                     </div>
@@ -806,8 +851,8 @@
             isSignup = (type === 'signup');
             document.getElementById('nameGroup').classList.toggle('hidden', !isSignup);
             document.getElementById('authSubmitBtn').innerText = isSignup ? 'Register New Account' : 'Sign In to Access Portal';
-            document.getElementById('tabLogin').className = !isSignup ? 'flex-1 py-2 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm' : 'flex-1 py-2 font-semibold text-slate-400 text-sm';
-            document.getElementById('tabSignup').className = isSignup ? 'flex-1 py-2 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm' : 'flex-1 py-2 font-semibold text-slate-400 text-sm';
+            document.getElementById('tabLogin').className = !isSignup ? 'flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm' : 'flex-1 py-3 font-semibold text-slate-400 text-sm';
+            document.getElementById('tabSignup').className = isSignup ? 'flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm' : 'flex-1 py-3 font-semibold text-slate-400 text-sm';
         };
 
         window.handleAuth = async function(e) {
@@ -816,7 +861,7 @@
             const password = document.getElementById('authPassword').value;
             const statusDiv = document.getElementById('authStatus');
 
-            statusDiv.className = "p-3 rounded-lg text-xs font-medium text-center bg-blue-50 text-blue-700 block";
+            statusDiv.className = "p-3 rounded-xl text-xs font-medium text-center bg-blue-50 text-blue-700 block";
             statusDiv.innerText = "Authenticating with Firebase...";
 
             try {
@@ -842,7 +887,7 @@
                 document.getElementById('userBadge').classList.remove('hidden');
                 document.getElementById('userEmailDisplay').innerText = email;
             } catch (err) {
-                statusDiv.className = "p-3 rounded-lg text-xs font-medium text-center bg-red-50 text-red-700 block";
+                statusDiv.className = "p-3 rounded-xl text-xs font-medium text-center bg-red-50 text-red-700 block";
                 statusDiv.innerText = err.message || "Authentication error. Check Firebase keys.";
             }
         };
