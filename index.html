@@ -363,7 +363,7 @@
     <!-- MAIN DASHBOARD CONTENT -->
     <main class="flex-grow container mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-8 sm:space-y-10">
 
-        <!-- NEW FEATURE: DIGITAL UDHAR (CREDIT) LEDGER & 1-CLICK PAY LINKS -->
+        <!-- DIGITAL UDHAR (CREDIT) LEDGER & 1-CLICK PAY LINKS -->
         <section id="udharSection" class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
             <div class="border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
@@ -371,17 +371,15 @@
                         <i class="fa-solid fa-book-bookmark text-brand-600"></i> Digital Udhar (Credit) Ledger & Reminders
                     </h3>
                     <p class="text-xs text-slate-500 mt-1">
-                        Track customer debts and send automated WhatsApp/SMS payment reminder links with instant UPI payment buttons.
+                        Track customer debts and trigger 1-click WhatsApp/SMS payment requests targeted directly to the saved mobile number.
                     </p>
                 </div>
-                <!-- Udhar Stats Badge -->
                 <div class="bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl text-right w-full sm:w-auto">
                     <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Total Outstanding Credit</span>
                     <span id="totalUdharVal" class="text-xl font-extrabold text-amber-900">₹2,070</span>
                 </div>
             </div>
 
-            <!-- Udhar Form & List Grid -->
             <div class="grid lg:grid-cols-3 gap-6">
                 <!-- Add New Udhar Form -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
@@ -411,9 +409,9 @@
                         <div>
                             <label class="font-semibold text-slate-700">Reminder Language</label>
                             <select id="udharLangSelect" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-white mt-1">
-                                <option value="hi">हिंदी (Hindi SMS/WhatsApp)</option>
-                                <option value="mr">मराठी (Marathi SMS/WhatsApp)</option>
-                                <option value="en">English Reminder</option>
+                                <option value="hi">हिंदी (Hindi WhatsApp)</option>
+                                <option value="mr">मराठी (Marathi WhatsApp)</option>
+                                <option value="en">English WhatsApp</option>
                             </select>
                         </div>
                         <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-lg shadow transition text-xs flex items-center justify-center gap-1.5">
@@ -428,11 +426,11 @@
                         <h4 class="font-bold text-sm text-slate-800">
                             <i class="fa-solid fa-list-check text-brand-600 mr-1"></i> Outstanding Customer Accounts (<span id="udharCount">2</span>)
                         </h4>
-                        <span class="text-[11px] text-slate-400">Click reminder to launch 1-Click UPI Pay Link</span>
+                        <span class="text-[11px] text-slate-400">1-Tap WhatsApp Request</span>
                     </div>
 
                     <div id="udharList" class="space-y-3 max-h-[380px] overflow-y-auto touch-scroll pr-1">
-                        <!-- Initial Sample Entries rendered by JS -->
+                        <!-- Rendered by JS -->
                     </div>
                 </div>
             </div>
@@ -616,13 +614,13 @@
         let activeLanguage = 'en';
         let currentActiveScheme = 'MUDRA Yojana';
 
-        // Digital Udhar Ledger In-Memory Store
+        // Udhar Store
         let udharEntries = [
             { id: 1, name: "Ramesh Patil", amount: 1450, mobile: "9823012345", items: "Kirana Ration & Oil", lang: "hi", date: "Today" },
             { id: 2, name: "Savita Devi", amount: 620, mobile: "9876543210", items: "Cattle Fodder & Seeds", lang: "mr", date: "Yesterday" }
         ];
 
-        // Render Udhar Ledger Items
+        // Render Udhar Ledger List (Updated Button Text to "Send WhatsApp Request")
         window.renderUdharLedger = function() {
             const container = document.getElementById('udharList');
             const totalValSpan = document.getElementById('totalUdharVal');
@@ -650,10 +648,11 @@
                     </div>
 
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <button onclick="sendUdharReminder(${item.id})" class="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-1.5">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Pay Link
+                        <!-- UPDATED BUTTON TEXT AS REQUESTED -->
+                        <button onclick="sendUdharReminder(${item.id})" class="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Send WhatsApp Request
                         </button>
-                        <button onclick="markUdharPaid(${item.id})" class="px-2.5 py-1.5 border border-slate-300 hover:bg-slate-200 active:scale-95 text-slate-600 font-semibold rounded-lg text-xs transition" title="Mark Paid">
+                        <button onclick="markUdharPaid(${item.id})" class="px-3 py-2 border border-slate-300 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold rounded-xl text-xs transition" title="Mark Paid">
                             <i class="fa-solid fa-check text-emerald-600"></i> Paid
                         </button>
                     </div>
@@ -682,13 +681,13 @@
             udharEntries.unshift(newEntry);
             renderUdharLedger();
 
-            // Reset form
             document.getElementById('udharName').value = '';
             document.getElementById('udharAmount').value = '';
             document.getElementById('udharMobile').value = '';
             document.getElementById('udharItems').value = '';
         };
 
+        // Triggers WhatsApp targeting the exact customer mobile number
         window.sendUdharReminder = function(id) {
             const item = udharEntries.find(x => x.id === id);
             if (!item) return;
@@ -705,6 +704,7 @@
             }
 
             const encodedMsg = encodeURIComponent(msg);
+            // Deep-link directly targeting the saved mobile number
             const waUrl = `https://wa.me/91${item.mobile}?text=${encodedMsg}`;
             window.open(waUrl, '_blank');
         };
@@ -714,7 +714,6 @@
             renderUdharLedger();
         };
 
-        // Initialize Udhar Ledger on load
         setTimeout(() => { renderUdharLedger(); }, 300);
 
         const schemeData = {
@@ -778,7 +777,6 @@
             }
         };
 
-        // Modal Handlers
         window.openExpertModal = function() {
             document.getElementById('expertModal').classList.remove('hidden');
         };
@@ -869,7 +867,6 @@
             }
         };
 
-        // AI Assistant Logic
         window.openAiAssistant = function() {
             document.getElementById('aiModal').classList.remove('hidden');
         };
@@ -1010,7 +1007,6 @@
             input.value = '';
         };
 
-        // Authentication Handlers
         window.switchAuthTab = function(type) {
             isSignup = (type === 'signup');
             document.getElementById('nameGroup').classList.toggle('hidden', !isSignup);
