@@ -40,19 +40,9 @@
         }
     </script>
     <style>
-        /* Touch scroll momentum for Android */
-        .touch-scroll {
-            -webkit-overflow-scrolling: touch;
-        }
-        /* Custom scrollbars for small screens */
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #047857;
-            border-radius: 99px;
-        }
+        .touch-scroll { -webkit-overflow-scrolling: touch; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-thumb { background: #047857; border-radius: 99px; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen relative pb-20 md:pb-0 select-none sm:select-text">
@@ -229,7 +219,6 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-700">Loan Amount Needed (₹)</label>
-                        <!-- ANDROID NUMERIC KEYPAD INPUT -->
                         <input type="number" id="loanAmountReq" inputmode="numeric" required placeholder="Type amount (e.g. 75000)" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-semibold">
                     </div>
                     <div class="space-y-1">
@@ -241,7 +230,6 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-xs font-semibold text-slate-700">Mobile Number</label>
-                        <!-- ANDROID PHONE KEYPAD INPUT -->
                         <input type="tel" id="loanMobile" inputmode="numeric" required placeholder="10-digit number" pattern="[0-9]{10}" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
                     <div class="space-y-1">
@@ -375,6 +363,81 @@
     <!-- MAIN DASHBOARD CONTENT -->
     <main class="flex-grow container mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-8 sm:space-y-10">
 
+        <!-- NEW FEATURE: DIGITAL UDHAR (CREDIT) LEDGER & 1-CLICK PAY LINKS -->
+        <section id="udharSection" class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
+            <div class="border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <h3 class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-book-bookmark text-brand-600"></i> Digital Udhar (Credit) Ledger & Reminders
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Track customer debts and send automated WhatsApp/SMS payment reminder links with instant UPI payment buttons.
+                    </p>
+                </div>
+                <!-- Udhar Stats Badge -->
+                <div class="bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl text-right w-full sm:w-auto">
+                    <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Total Outstanding Credit</span>
+                    <span id="totalUdharVal" class="text-xl font-extrabold text-amber-900">₹2,070</span>
+                </div>
+            </div>
+
+            <!-- Udhar Form & List Grid -->
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Add New Udhar Form -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h4 class="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus text-brand-600"></i> Add Customer Credit
+                    </h4>
+                    
+                    <form onsubmit="addUdharEntry(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="font-semibold text-slate-700">Customer Name</label>
+                            <input type="text" id="udharName" required placeholder="e.g. Ramesh Patil" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-white mt-1">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="font-semibold text-slate-700">Amount Owed (₹)</label>
+                                <input type="number" id="udharAmount" inputmode="numeric" required placeholder="e.g. 500" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-white mt-1 font-semibold">
+                            </div>
+                            <div>
+                                <label class="font-semibold text-slate-700">Mobile Number</label>
+                                <input type="tel" id="udharMobile" inputmode="numeric" required placeholder="10-digit number" pattern="[0-9]{10}" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-white mt-1">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700">Items / Note</label>
+                            <input type="text" id="udharItems" placeholder="e.g. 5kg Rice, Oil, Ration" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-white mt-1">
+                        </div>
+                        <div>
+                            <label class="font-semibold text-slate-700">Reminder Language</label>
+                            <select id="udharLangSelect" class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-white mt-1">
+                                <option value="hi">हिंदी (Hindi SMS/WhatsApp)</option>
+                                <option value="mr">मराठी (Marathi SMS/WhatsApp)</option>
+                                <option value="en">English Reminder</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-lg shadow transition text-xs flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-plus-circle"></i> Save Udhar Entry
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Active Udhar Customer List -->
+                <div class="lg:col-span-2 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-sm text-slate-800">
+                            <i class="fa-solid fa-list-check text-brand-600 mr-1"></i> Outstanding Customer Accounts (<span id="udharCount">2</span>)
+                        </h4>
+                        <span class="text-[11px] text-slate-400">Click reminder to launch 1-Click UPI Pay Link</span>
+                    </div>
+
+                    <div id="udharList" class="space-y-3 max-h-[380px] overflow-y-auto touch-scroll pr-1">
+                        <!-- Initial Sample Entries rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- SCHEME FINDER OVERVIEW & JANSAMARTH INTEGRATION -->
         <section class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
             <div class="border-b pb-4 space-y-2">
@@ -503,10 +566,10 @@
             <i class="fa-solid fa-house text-lg mb-0.5"></i>
             Home
         </button>
-        <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-brand-100 active:scale-95">
-            <i class="fa-solid fa-building-columns text-lg mb-0.5 text-amber-400"></i>
-            Schemes
-        </a>
+        <button onclick="document.getElementById('udharSection').scrollIntoView({behavior:'smooth'})" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-brand-100 active:scale-95">
+            <i class="fa-solid fa-book-bookmark text-lg mb-0.5 text-emerald-400"></i>
+            Udhar Ledger
+        </button>
         <button onclick="openLoanModal()" class="flex flex-col items-center py-1 px-2 text-[10px] font-semibold text-amber-400 active:scale-95">
             <div class="w-9 h-9 bg-amber-500 text-slate-950 rounded-full flex items-center justify-center shadow-lg -mt-4 mb-0.5 border-2 border-brand-900">
                 <i class="fa-solid fa-paper-plane text-sm"></i>
@@ -552,6 +615,107 @@
         let isSignup = false;
         let activeLanguage = 'en';
         let currentActiveScheme = 'MUDRA Yojana';
+
+        // Digital Udhar Ledger In-Memory Store
+        let udharEntries = [
+            { id: 1, name: "Ramesh Patil", amount: 1450, mobile: "9823012345", items: "Kirana Ration & Oil", lang: "hi", date: "Today" },
+            { id: 2, name: "Savita Devi", amount: 620, mobile: "9876543210", items: "Cattle Fodder & Seeds", lang: "mr", date: "Yesterday" }
+        ];
+
+        // Render Udhar Ledger Items
+        window.renderUdharLedger = function() {
+            const container = document.getElementById('udharList');
+            const totalValSpan = document.getElementById('totalUdharVal');
+            const countSpan = document.getElementById('udharCount');
+
+            if (!container) return;
+
+            const totalSum = udharEntries.reduce((acc, curr) => acc + Number(curr.amount), 0);
+            totalValSpan.innerText = "₹" + totalSum.toLocaleString('en-IN');
+            countSpan.innerText = udharEntries.length;
+
+            if (udharEntries.length === 0) {
+                container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border">No pending customer debts! All balances cleared.</div>`;
+                return;
+            }
+
+            container.innerHTML = udharEntries.map(item => `
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:border-brand-500 transition">
+                    <div class="space-y-0.5">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-900 text-sm">${item.name}</span>
+                            <span class="text-[10px] font-semibold px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full">Owes ₹${item.amount}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500"><i class="fa-solid fa-basket-shopping text-slate-400 mr-1"></i> ${item.items || 'General Goods'} • <i class="fa-solid fa-phone text-slate-400 mr-0.5"></i> ${item.mobile}</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button onclick="sendUdharReminder(${item.id})" class="flex-1 sm:flex-none px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-lg text-xs transition flex items-center justify-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Pay Link
+                        </button>
+                        <button onclick="markUdharPaid(${item.id})" class="px-2.5 py-1.5 border border-slate-300 hover:bg-slate-200 active:scale-95 text-slate-600 font-semibold rounded-lg text-xs transition" title="Mark Paid">
+                            <i class="fa-solid fa-check text-emerald-600"></i> Paid
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.addUdharEntry = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('udharName').value;
+            const amount = document.getElementById('udharAmount').value;
+            const mobile = document.getElementById('udharMobile').value;
+            const items = document.getElementById('udharItems').value;
+            const lang = document.getElementById('udharLangSelect').value;
+
+            const newEntry = {
+                id: Date.now(),
+                name: name,
+                amount: Number(amount),
+                mobile: mobile,
+                items: items || "General Purchases",
+                lang: lang,
+                date: "Just now"
+            };
+
+            udharEntries.unshift(newEntry);
+            renderUdharLedger();
+
+            // Reset form
+            document.getElementById('udharName').value = '';
+            document.getElementById('udharAmount').value = '';
+            document.getElementById('udharMobile').value = '';
+            document.getElementById('udharItems').value = '';
+        };
+
+        window.sendUdharReminder = function(id) {
+            const item = udharEntries.find(x => x.id === id);
+            if (!item) return;
+
+            let msg = "";
+            const upiLink = `upi://pay?pa=gramfintech@upi&pn=VillageStore&am=${item.amount}&cu=INR`;
+
+            if (item.lang === 'hi') {
+                msg = `नमस्ते ${item.name} जी, आपकी ग्रामफिनटेक दुकान की बकाया राशि ₹${item.amount} (${item.items}) भुगतान के लिए लंबित है। कृपया इस 1-Click UPI लिंक से भुगतान करें: ${upiLink}`;
+            } else if (item.lang === 'mr') {
+                msg = `नमस्कार ${item.name} जी, तुमचे ग्रामफिनटेक दुकानातील थकीत ₹${item.amount} (${item.items}) बाकी आहे. कृपया खालील 1-Click UPI लिंकवर क्लिक करून पेमेंट करा: ${upiLink}`;
+            } else {
+                msg = `Hello ${item.name}, your store pending debt of ₹${item.amount} for (${item.items}) is due. Please pay instantly via this 1-Click UPI link: ${upiLink}`;
+            }
+
+            const encodedMsg = encodeURIComponent(msg);
+            const waUrl = `https://wa.me/91${item.mobile}?text=${encodedMsg}`;
+            window.open(waUrl, '_blank');
+        };
+
+        window.markUdharPaid = function(id) {
+            udharEntries = udharEntries.filter(x => x.id !== id);
+            renderUdharLedger();
+        };
+
+        // Initialize Udhar Ledger on load
+        setTimeout(() => { renderUdharLedger(); }, 300);
 
         const schemeData = {
             mudra: {
@@ -797,6 +961,8 @@
                     reply = "General documents required: 1. Aadhaar Card / Voter ID, 2. Residence Proof, 3. 6-Month Bank Passbook/Statement, 4. Business or Land/Livestock proof.";
                 } else if (lower.includes("interest") || lower.includes("rate")) {
                     reply = "Our schemes offer subsidized rates: PM Vishwakarma @ 5%, KCC for Dairy/Agri @ 4% (effective), and MUDRA @ ~8.5% p.a.";
+                } else if (lower.includes("udhar") || lower.includes("ledger") || lower.includes("credit")) {
+                    reply = "Use our Digital Udhar Ledger section to record customer credit and trigger automated 1-Click WhatsApp payment links with UPI!";
                 } else if (lower.includes("apply") || lower.includes("loan")) {
                     reply = "You can request a loan instantly by clicking the yellow 'Request Loan' button or using the mobile bottom navigation bar!";
                 } else {
@@ -811,8 +977,8 @@
                     reply = "पीएम विश्वकर्मा योजना के तहत कारीगरों को ₹15,000 का टूलकिट वाउचर, ₹500/दिन वजीफे के साथ ट्रेनिंग और सिर्फ 5% ब्याज पर ₹3 लाख तक का लोन मिलता है।";
                 } else if (lower.includes("केसीसी") || lower.includes("kcc") || lower.includes("डेयरी") || lower.includes("किसान")) {
                     reply = "किसान क्रेडिट कार्ड (KCC) से डेयरी और खेती के लिए ₹2 लाख तक का क्रेडिट सिर्फ 4% प्रभावी ब्याज दर पर मिलता है।";
-                } else if (lower.includes("दस्तावेज") || lower.includes("कागजात") || lower.includes("doc")) {
-                    reply = "आवश्यक दस्तावेज: 1. आधार कार्ड/वोटर आईडी, 2. निवास प्रमाण पत्र, 3. बैंक पासबुक (6 महीने), 4. व्यवसाय या भूमि/पशुधन का विवरण।";
+                } else if (lower.includes("उधार") || lower.includes("खाता")) {
+                    reply = "हमारे डिजिटल उधार लेजर का उपयोग करके आप ग्राहकों का उधार लिख सकते हैं और उन्हें व्हाट्सएप्प पर 1-क्लिक यूपीआई लिंक भेज सकते हैं!";
                 } else {
                     reply = "आपकी क्वेरी दर्ज की गई: '" + text + "'। लोन आवेदन के लिए नीचे दिए गए 'Apply Loan' बटन पर क्लिक करें।";
                 }
@@ -823,10 +989,8 @@
                     reply = "मुद्रा योजनेअंतर्गत छोट्या व्यावसायिकांना विनातारण ₹5 लाखांपर्यंत कर्ज मिळते. आवश्यक कागदपत्रे: आधार कार्ड, रहिवासी दाखला आणि 6 महिन्यांचे बँक स्टेटमेंट.";
                 } else if (lower.includes("विश्वकर्मा") || lower.includes("vishwakarma")) {
                     reply = "पीएम विश्वकर्मा योजनेत कारागिरांना ₹15,000 टूलकिट वाउचर, ₹500/दिवस विद्यावेतन आणि फक्त 5% व्याजाने ₹3 लाखांपर्यंत कर्ज मिळते.";
-                } else if (lower.includes("केसीसी") || lower.includes("kcc") || lower.includes("डेअरी") || lower.includes("किसान")) {
-                    reply = "किसान क्रेडिट कार्ड (KCC) द्वारे शेती आणि दुग्धव्यवसायासाठी ₹2 लाखांपर्यंत कर्ज फक्त 4% प्रभावी व्याजदराने मिळते.";
-                } else if (lower.includes("कागदपत्रे") || lower.includes("कागद") || lower.includes("doc")) {
-                    reply = "लागणारी कागदपत्रे: 1. आधार कार्ड, 2. रहिवासी दाखला, 3. 6 महिन्यांचे बँक पासबुक, 4. व्यवसायाचा किंवा जमिनीचा/जनावरांचा पुरावा.";
+                } else if (lower.includes("उधार") || lower.includes("खाते")) {
+                    reply = "आमच्या डिजिटल उधार लेजरचा वापर करून ग्राहकांचे उधार नोंदवा आणि त्यांना १-क्लिक UPI लिंक व्हॉट्सअ‍ॅपवर पाठवा!";
                 } else {
                     reply = "आपली विचारणा: '" + text + "'. कर्जासाठी अर्ज करण्यासाठी खालील 'Apply Loan' बटनावर क्लिक करा.";
                 }
