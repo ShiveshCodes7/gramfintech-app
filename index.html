@@ -363,7 +363,7 @@
     <!-- MAIN DASHBOARD CONTENT -->
     <main class="flex-grow container mx-auto px-3 sm:px-4 py-6 sm:py-8 space-y-8 sm:space-y-10">
 
-        <!-- DIGITAL UDHAR (CREDIT) LEDGER & 1-CLICK PAY LINKS -->
+        <!-- DIGITAL UDHAR (CREDIT) LEDGER & 1-CLICK PAY LINKS (CONNECTED TO CLOUD FIRESTORE) -->
         <section id="udharSection" class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
             <div class="border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <div>
@@ -371,12 +371,12 @@
                         <i class="fa-solid fa-book-bookmark text-brand-600"></i> Digital Udhar (Credit) Ledger & Reminders
                     </h3>
                     <p class="text-xs text-slate-500 mt-1">
-                        Track customer debts and trigger 1-click WhatsApp/SMS payment requests targeted directly to the saved mobile number.
+                        Track customer debts in real-time Cloud Firestore & trigger 1-click WhatsApp payment requests directly to customer phone numbers.
                     </p>
                 </div>
                 <div class="bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl text-right w-full sm:w-auto">
                     <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">Total Outstanding Credit</span>
-                    <span id="totalUdharVal" class="text-xl font-extrabold text-amber-900">₹2,070</span>
+                    <span id="totalUdharVal" class="text-xl font-extrabold text-amber-900">₹0</span>
                 </div>
             </div>
 
@@ -414,7 +414,7 @@
                                 <option value="en">English WhatsApp</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-lg shadow transition text-xs flex items-center justify-center gap-1.5">
+                        <button type="submit" id="saveUdharBtn" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold rounded-lg shadow transition text-xs flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-plus-circle"></i> Save Udhar Entry
                         </button>
                     </form>
@@ -424,13 +424,13 @@
                 <div class="lg:col-span-2 space-y-3">
                     <div class="flex justify-between items-center">
                         <h4 class="font-bold text-sm text-slate-800">
-                            <i class="fa-solid fa-list-check text-brand-600 mr-1"></i> Outstanding Customer Accounts (<span id="udharCount">2</span>)
+                            <i class="fa-solid fa-list-check text-brand-600 mr-1"></i> Outstanding Customer Accounts (<span id="udharCount">0</span>)
                         </h4>
-                        <span class="text-[11px] text-slate-400">1-Tap WhatsApp Request</span>
+                        <span class="text-[11px] text-slate-400">Synced Live with Firestore</span>
                     </div>
 
                     <div id="udharList" class="space-y-3 max-h-[380px] overflow-y-auto touch-scroll pr-1">
-                        <!-- Rendered by JS -->
+                        <div class="p-6 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border">Loading ledger from Cloud Firestore...</div>
                     </div>
                 </div>
             </div>
@@ -592,8 +592,8 @@
     <!-- FIREBASE & APPLICATION LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // FIREBASE CONFIGURATION
         const firebaseConfig = {
@@ -613,14 +613,39 @@
         let isSignup = false;
         let activeLanguage = 'en';
         let currentActiveScheme = 'MUDRA Yojana';
+        let udharEntries = [];
+        let unsubscribeUdhar = null;
 
-        // Udhar Store
-        let udharEntries = [
-            { id: 1, name: "Ramesh Patil", amount: 1450, mobile: "9823012345", items: "Kirana Ration & Oil", lang: "hi", date: "Today" },
-            { id: 2, name: "Savita Devi", amount: 620, mobile: "9876543210", items: "Cattle Fodder & Seeds", lang: "mr", date: "Yesterday" }
-        ];
+        // AUTH STATE OBSERVER
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('authModal').classList.add('hidden');
+                document.getElementById('userBadge').classList.remove('hidden');
+                document.getElementById('userEmailDisplay').innerText = user.email;
+            } else {
+                document.getElementById('authModal').classList.remove('hidden');
+                document.getElementById('userBadge').classList.add('hidden');
+            }
+        });
 
-        // Render Udhar Ledger List (Updated Button Text to "Send WhatsApp Request")
+        // REAL-TIME FIRESTORE SYNC FOR DIGITAL UDHAR LEDGER
+        window.initUdharRealtimeSync = function() {
+            if (unsubscribeUdhar) unsubscribeUdhar();
+            
+            // Listen to live changes in 'udhar_entries' collection
+            unsubscribeUdhar = onSnapshot(collection(db, "udhar_entries"), (snapshot) => {
+                udharEntries = snapshot.docs.map(d => ({
+                    id: d.id,
+                    ...d.data()
+                }));
+                renderUdharLedger();
+            }, (error) => {
+                console.error("Firestore Udhar Sync Error:", error);
+                document.getElementById('udharList').innerHTML = `<div class="p-4 text-center text-red-500 text-xs">Error connecting to database. Please check connection.</div>`;
+            });
+        };
+
+        // Render Udhar Ledger List
         window.renderUdharLedger = function() {
             const container = document.getElementById('udharList');
             const totalValSpan = document.getElementById('totalUdharVal');
@@ -628,7 +653,7 @@
 
             if (!container) return;
 
-            const totalSum = udharEntries.reduce((acc, curr) => acc + Number(curr.amount), 0);
+            const totalSum = udharEntries.reduce((acc, curr) => acc + Number(curr.amount || 0), 0);
             totalValSpan.innerText = "₹" + totalSum.toLocaleString('en-IN');
             countSpan.innerText = udharEntries.length;
 
@@ -648,11 +673,10 @@
                     </div>
 
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <!-- UPDATED BUTTON TEXT AS REQUESTED -->
-                        <button onclick="sendUdharReminder(${item.id})" class="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow">
+                        <button onclick="sendUdharReminder('${item.id}')" class="flex-1 sm:flex-none px-3 py-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow">
                             <i class="fa-brands fa-whatsapp text-sm"></i> Send WhatsApp Request
                         </button>
-                        <button onclick="markUdharPaid(${item.id})" class="px-3 py-2 border border-slate-300 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold rounded-xl text-xs transition" title="Mark Paid">
+                        <button onclick="markUdharPaid('${item.id}')" class="px-3 py-2 border border-slate-300 hover:bg-slate-200 active:scale-95 text-slate-700 font-semibold rounded-xl text-xs transition" title="Mark Paid in Database">
                             <i class="fa-solid fa-check text-emerald-600"></i> Paid
                         </button>
                     </div>
@@ -660,31 +684,44 @@
             `).join('');
         };
 
-        window.addUdharEntry = function(e) {
+        // Add New Udhar Entry directly to Firestore
+        window.addUdharEntry = async function(e) {
             e.preventDefault();
+            const btn = document.getElementById('saveUdharBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving to Database...`;
+
             const name = document.getElementById('udharName').value;
             const amount = document.getElementById('udharAmount').value;
             const mobile = document.getElementById('udharMobile').value;
             const items = document.getElementById('udharItems').value;
             const lang = document.getElementById('udharLangSelect').value;
 
-            const newEntry = {
-                id: Date.now(),
-                name: name,
-                amount: Number(amount),
-                mobile: mobile,
-                items: items || "General Purchases",
-                lang: lang,
-                date: "Just now"
-            };
+            try {
+                const user = auth.currentUser;
+                await addDoc(collection(db, "udhar_entries"), {
+                    name: name,
+                    amount: Number(amount),
+                    mobile: mobile,
+                    items: items || "General Purchases",
+                    lang: lang,
+                    ownerUid: user ? user.uid : "guest_user",
+                    ownerEmail: user ? user.email : "guest_user",
+                    timestamp: serverTimestamp()
+                });
 
-            udharEntries.unshift(newEntry);
-            renderUdharLedger();
-
-            document.getElementById('udharName').value = '';
-            document.getElementById('udharAmount').value = '';
-            document.getElementById('udharMobile').value = '';
-            document.getElementById('udharItems').value = '';
+                // Clear input fields
+                document.getElementById('udharName').value = '';
+                document.getElementById('udharAmount').value = '';
+                document.getElementById('udharMobile').value = '';
+                document.getElementById('udharItems').value = '';
+            } catch (err) {
+                alert("Failed to save entry to cloud database: " + (err.message || "Please try again."));
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         };
 
         // Triggers WhatsApp targeting the exact customer mobile number
@@ -704,17 +741,21 @@
             }
 
             const encodedMsg = encodeURIComponent(msg);
-            // Deep-link directly targeting the saved mobile number
             const waUrl = `https://wa.me/91${item.mobile}?text=${encodedMsg}`;
             window.open(waUrl, '_blank');
         };
 
-        window.markUdharPaid = function(id) {
-            udharEntries = udharEntries.filter(x => x.id !== id);
-            renderUdharLedger();
+        // Mark Paid: Deletes document from Firestore live database
+        window.markUdharPaid = async function(id) {
+            try {
+                await deleteDoc(doc(db, "udhar_entries", id));
+            } catch (err) {
+                alert("Error marking paid in database: " + err.message);
+            }
         };
 
-        setTimeout(() => { renderUdharLedger(); }, 300);
+        // Initialize Realtime Listener
+        initUdharRealtimeSync();
 
         const schemeData = {
             mudra: {
@@ -971,7 +1012,7 @@
                 } else if (lower.includes("मुद्रा") || lower.includes("mudra")) {
                     reply = "मुद्रा योजना में छोटे दुकानदारों और व्यवसायों के लिए बिना गारंटी ₹5 लाख तक का लोन मिलता है। दस्तावेज: आधार कार्ड, निवास प्रमाण, 6 महीने का बैंक स्टेटमेंट।";
                 } else if (lower.includes("विश्वकर्मा") || lower.includes("vishwakarma")) {
-                    reply = "पीएम विश्वकर्मा योजना के तहत कारीगरों को ₹15,000 का टूलकिट वाउचर, ₹500/दिन वजीफे के साथ ट्रेनिंग और सिर्फ 5% ब्याज पर ₹3 लाख तक का लोन मिलता है।";
+                    reply = "पीएम विश्वकर्मा योजना के तहत कारीगरों को ₹15,00,000 का टूलकिट वाउचर, ₹500/दिन वजीफे के साथ ट्रेनिंग और सिर्फ 5% ब्याज पर ₹3 लाख तक का लोन मिलता है।";
                 } else if (lower.includes("केसीसी") || lower.includes("kcc") || lower.includes("डेयरी") || lower.includes("किसान")) {
                     reply = "किसान क्रेडिट कार्ड (KCC) से डेयरी और खेती के लिए ₹2 लाख तक का क्रेडिट सिर्फ 4% प्रभावी ब्याज दर पर मिलता है।";
                 } else if (lower.includes("उधार") || lower.includes("खाता")) {
