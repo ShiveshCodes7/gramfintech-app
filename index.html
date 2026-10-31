@@ -47,7 +47,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen relative pb-20 md:pb-0 select-none sm:select-text">
 
-    <!-- 1. LOGIN & AUTHENTICATION MODAL -->
+    <!-- 1. LOGIN & AUTHENTICATION MODAL (STRICT VALIDATION ENABLED) -->
     <div id="authModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-100 overflow-hidden max-h-[92vh] flex flex-col">
             <div class="bg-brand-900 p-5 text-white text-center relative shrink-0">
@@ -60,24 +60,24 @@
 
             <div class="p-5 sm:p-6 space-y-4 overflow-y-auto touch-scroll">
                 <div class="flex border-b border-slate-200 mb-2">
-                    <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm active:scale-95 transition">Sign In</button>
-                    <button id="tabSignup" onclick="switchAuthTab('signup')" class="flex-1 py-3 font-semibold text-slate-400 text-sm active:scale-95 transition">Register</button>
+                    <button id="tabLogin" type="button" onclick="switchAuthTab('login')" class="flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm active:scale-95 transition">Sign In</button>
+                    <button id="tabSignup" type="button" onclick="switchAuthTab('signup')" class="flex-1 py-3 font-semibold text-slate-400 text-sm active:scale-95 transition">Register</button>
                 </div>
 
-                <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
+                <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4" novalidate>
                     <div id="nameGroup" class="hidden space-y-1">
-                        <label class="text-xs font-semibold text-slate-600">Full Name</label>
+                        <label class="text-xs font-semibold text-slate-600">Full Name <span class="text-red-500">*</span></label>
                         <input type="text" id="authName" placeholder="e.g. Ramesh Kumar" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
 
                     <div class="space-y-1">
-                        <label class="text-xs font-semibold text-slate-600">Email Address / User ID</label>
+                        <label class="text-xs font-semibold text-slate-600">Email Address <span class="text-red-500">*</span></label>
                         <input type="email" id="authEmail" required placeholder="entrepreneur@gram.in" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
 
                     <div class="space-y-1">
-                        <label class="text-xs font-semibold text-slate-600">Password</label>
-                        <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
+                        <label class="text-xs font-semibold text-slate-600">Password (Min. 6 characters) <span class="text-red-500">*</span></label>
+                        <input type="password" id="authPassword" required minlength="6" placeholder="••••••••" class="w-full px-3.5 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none">
                     </div>
 
                     <button type="submit" id="authSubmitBtn" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-bold text-sm rounded-xl shadow-md transition-all">
@@ -300,16 +300,14 @@
                 </div>
             </div>
 
-            <!-- SMART VISION INPUT CONTAINER WITH CAMERA & PREVIEW -->
+            <!-- SMART VISION INPUT CONTAINER -->
             <div class="p-3 bg-white border-t border-slate-200 flex flex-col gap-2">
-                <!-- Image Preview Thumbnail Container -->
                 <div id="aiImagePreview" class="hidden relative inline-block self-start border border-brand-300 rounded-lg p-1 bg-brand-50">
                     <img id="aiImageThumb" class="w-16 h-16 object-cover rounded-md" src="" alt="Photo Preview">
                     <button onclick="clearAiImage()" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow active:scale-95">✕</button>
                 </div>
 
                 <div class="flex gap-2 items-center">
-                    <!-- CAMERA / FILE UPLOAD BUTTON -->
                     <label for="aiFileInput" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 rounded-xl cursor-pointer text-xs flex items-center justify-center transition border border-slate-300 shrink-0" title="Take Photo or Upload Image">
                         <i class="fa-solid fa-camera text-brand-700 text-sm"></i>
                         <input type="file" id="aiFileInput" accept="image/*" capture="environment" class="hidden" onchange="handleAiImageSelect(event)">
@@ -644,6 +642,118 @@
                 document.getElementById('userBadge').classList.add('hidden');
             }
         });
+
+        // AUTH TAB SWITCHER WITH DYNAMIC FORM REQUIREMENTS
+        window.switchAuthTab = function(type) {
+            isSignup = (type === 'signup');
+            const nameGroup = document.getElementById('nameGroup');
+            const nameInput = document.getElementById('authName');
+            const statusDiv = document.getElementById('authStatus');
+
+            if (isSignup) {
+                nameGroup.classList.remove('hidden');
+                nameInput.setAttribute('required', 'required');
+            } else {
+                nameGroup.classList.add('hidden');
+                nameInput.removeAttribute('required');
+                nameInput.value = '';
+            }
+
+            document.getElementById('authSubmitBtn').innerText = isSignup ? 'Register New Account' : 'Sign In to Access Portal';
+            document.getElementById('tabLogin').className = !isSignup ? 'flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm active:scale-95 transition' : 'flex-1 py-3 font-semibold text-slate-400 text-sm active:scale-95 transition';
+            document.getElementById('tabSignup').className = isSignup ? 'flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm active:scale-95 transition' : 'flex-1 py-3 font-semibold text-slate-400 text-sm active:scale-95 transition';
+
+            statusDiv.classList.add('hidden');
+        };
+
+        // HANDLES AUTH WITH STRICT FORM VALIDATION
+        window.handleAuth = async function(e) {
+            e.preventDefault();
+            const emailInput = document.getElementById('authEmail');
+            const passwordInput = document.getElementById('authPassword');
+            const nameInput = document.getElementById('authName');
+            const statusDiv = document.getElementById('authStatus');
+            const submitBtn = document.getElementById('authSubmitBtn');
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            const name = nameInput.value.trim();
+
+            // 1. Strict Validation Checks
+            if (isSignup && !name) {
+                statusDiv.className = "p-3 rounded-xl text-xs font-semibold text-center bg-red-50 text-red-700 block";
+                statusDiv.innerText = "❌ Please enter your Full Name to register.";
+                nameInput.focus();
+                return;
+            }
+
+            if (!email || !email.includes('@')) {
+                statusDiv.className = "p-3 rounded-xl text-xs font-semibold text-center bg-red-50 text-red-700 block";
+                statusDiv.innerText = "❌ Please enter a valid Email Address.";
+                emailInput.focus();
+                return;
+            }
+
+            if (!password || password.length < 6) {
+                statusDiv.className = "p-3 rounded-xl text-xs font-semibold text-center bg-red-50 text-red-700 block";
+                statusDiv.innerText = "❌ Password must be at least 6 characters long.";
+                passwordInput.focus();
+                return;
+            }
+
+            // 2. Submit to Firebase Auth
+            statusDiv.className = "p-3 rounded-xl text-xs font-medium text-center bg-blue-50 text-blue-700 block";
+            statusDiv.innerText = "Authenticating with Firebase...";
+            submitBtn.disabled = true;
+
+            try {
+                if (isSignup) {
+                    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                    await addDoc(collection(db, "login_logs"), {
+                        uid: userCred.user.uid,
+                        email: email,
+                        fullName: name,
+                        action: "REGISTER",
+                        timestamp: serverTimestamp()
+                    });
+                } else {
+                    const userCred = await signInWithEmailAndPassword(auth, email, password);
+                    await addDoc(collection(db, "login_logs"), {
+                        uid: userCred.user.uid,
+                        email: email,
+                        action: "LOGIN",
+                        timestamp: serverTimestamp()
+                    });
+                }
+                
+                // Clear input fields on success
+                emailInput.value = '';
+                passwordInput.value = '';
+                nameInput.value = '';
+                statusDiv.classList.add('hidden');
+                document.getElementById('authModal').classList.add('hidden');
+            } catch (err) {
+                statusDiv.className = "p-3 rounded-xl text-xs font-semibold text-center bg-red-50 text-red-700 block";
+                let errMsg = err.message || "Authentication error.";
+                if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+                    errMsg = "Invalid email or password. Please try again.";
+                } else if (err.code === 'auth/email-already-in-use') {
+                    errMsg = "This email is already registered. Please sign in.";
+                } else if (err.code === 'auth/weak-password') {
+                    errMsg = "Password is too weak. Must be at least 6 characters.";
+                }
+                statusDiv.innerText = "❌ " + errMsg;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        };
+
+        window.handleLogout = async function() {
+            try { 
+                await signOut(auth); 
+            } catch (e) {}
+            document.getElementById('authModal').classList.remove('hidden');
+        };
 
         // REAL-TIME FIRESTORE SYNC FOR DIGITAL UDHAR LEDGER
         window.initUdharRealtimeSync = function() {
@@ -1014,7 +1124,6 @@
 
             const chat = document.getElementById('chatContainer');
             
-            // Build User Message Bubble with optional Attached Photo
             let userHtml = `<div class="flex justify-end mb-2">
                 <div class="bg-brand-700 text-white p-2.5 rounded-2xl rounded-tr-none max-w-[80%] text-[11px] space-y-1">`;
             
@@ -1030,7 +1139,6 @@
 
             chat.innerHTML += userHtml;
 
-            // Generate Vision Analysis Response if photo attached
             let reply = "";
             const lower = text.toLowerCase();
 
@@ -1077,14 +1185,13 @@
                     } else if (lower.includes("मुद्रा") || lower.includes("mudra")) {
                         reply = "मुद्रा योजनेअंतर्गत छोट्या व्यावसायिकांना विनातारण ₹5 लाखांपर्यंत कर्ज मिळते. आवश्यक कागदपत्रे: आधार कार्ड, रहिवासी दाखला आणि 6 महिन्यांचे बँक स्टेटमेंट.";
                     } else if (lower.includes("विश्वकर्मा") || lower.includes("vishwakarma")) {
-                        reply = "पीएम विश्वकर्मा योजनेत कारागिरांना ₹15,000 टूलकिट वाउचर, ₹500/दिवस विद्यावेतन आणि फक्त 5% व्याजाने ₹3 लाखांपर्यंत कर्ज मिळते.";
+                        reply = "पीएम विश्वकर्मा योजनेत कारागिरांना ₹15,00,000 टूलकिट वाउचर, ₹500/दिवस विद्यावेतन आणि फक्त 5% व्याजाने ₹3 लाखांपर्यंत कर्ज मिळते.";
                     } else {
                         reply = "आपली विचारणा: '" + text + "'. कर्जासाठी अर्ज करण्यासाठी खालील 'Apply Loan' बटनावर क्लिक करा.";
                     }
                 }
             }
 
-            // Clear selected image preview after sending
             clearAiImage();
             input.value = '';
 
@@ -1098,56 +1205,6 @@
                 `;
                 chat.scrollTop = chat.scrollHeight;
             }, 450);
-        };
-
-        window.switchAuthTab = function(type) {
-            isSignup = (type === 'signup');
-            document.getElementById('nameGroup').classList.toggle('hidden', !isSignup);
-            document.getElementById('authSubmitBtn').innerText = isSignup ? 'Register New Account' : 'Sign In to Access Portal';
-            document.getElementById('tabLogin').className = !isSignup ? 'flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm' : 'flex-1 py-3 font-semibold text-slate-400 text-sm';
-            document.getElementById('tabSignup').className = isSignup ? 'flex-1 py-3 font-semibold text-brand-700 border-b-2 border-brand-700 text-sm' : 'flex-1 py-3 font-semibold text-slate-400 text-sm';
-        };
-
-        window.handleAuth = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
-            const statusDiv = document.getElementById('authStatus');
-
-            statusDiv.className = "p-3 rounded-xl text-xs font-medium text-center bg-blue-50 text-blue-700 block";
-            statusDiv.innerText = "Authenticating with Firebase...";
-
-            try {
-                if (isSignup) {
-                    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                    await addDoc(collection(db, "login_logs"), {
-                        uid: userCred.user.uid,
-                        email: email,
-                        action: "REGISTER",
-                        timestamp: serverTimestamp()
-                    });
-                } else {
-                    const userCred = await signInWithEmailAndPassword(auth, email, password);
-                    await addDoc(collection(db, "login_logs"), {
-                        uid: userCred.user.uid,
-                        email: email,
-                        action: "LOGIN",
-                        timestamp: serverTimestamp()
-                    });
-                }
-                
-                document.getElementById('authModal').classList.add('hidden');
-                document.getElementById('userBadge').classList.remove('hidden');
-                document.getElementById('userEmailDisplay').innerText = email;
-            } catch (err) {
-                statusDiv.className = "p-3 rounded-xl text-xs font-medium text-center bg-red-50 text-red-700 block";
-                statusDiv.innerText = err.message || "Authentication error. Check Firebase keys.";
-            }
-        };
-
-        window.handleLogout = async function() {
-            try { await signOut(auth); } catch (e) {}
-            document.getElementById('authModal').classList.remove('hidden');
         };
 
         window.calculateEMI = function() {
